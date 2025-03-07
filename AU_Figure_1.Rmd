@@ -1,5 +1,246 @@
 ---
-title: "AU_Figure_1"
+title: "Figure 1"
+author: "Asreeta Ushasri"
 output: html_document
 ---
+
+# Set Up
+```{r message=FALSE, warning=FALSE}
+#Load packages
+library(here)
+library(tidyverse)
+library(dplyr)
+library(moments)
+library(readxl)
+library(dunn.test)
+library(gt)
+library(paletteer)
+library(tinytex)
+library(lubridate)
+library(viridis)
+library(vcdExtra)
+library(ggplot2)
+library(cowplot)
+
+#Load in egrid 2023 data
+#Only load in sheet 3
+#This is raw data on electricity generators in the U.S.
+
+egrid_2023 <- read_xlsx("egrid2023_data.xlsx",
+                        sheet = 3)
+
+```
+
+# Data Wrangling
+
+```{r}
+#view(egrid_2023)
+#add underscore to column names for coding
+#first, create a function to add underscore
+
+inject_underscore <- function(df) {
+  names(df) <- gsub(" ", "_", names(df))
+  return(df)
+}
+
+#next, operate function on data frame
+egrid_2023 <- inject_underscore(egrid_2023)
+View(egrid_2023)
+
+colnames(egrid_2023)[colnames(egrid_2023) == 'Generator_nameplate_capacity_(MW)'] <-
+  'Generator_nameplate_capacity_MW'
+
+#remove first row, repetitive names
+egrid_2023[-c(1), ]
+
+#Create two separate data frames for CA and TX
+
+CA_egrid_2023 <- egrid_2023 %>% 
+  filter(Plant_state_abbreviation == "CA")
+
+TX_egrid_2023 <- egrid_2023 %>% 
+  filter(Plant_state_abbreviation == "TX")
+
+#view(CA_egrid_2023)
+#view(TX_egrid_2023)
+
+#Both states in same dataset
+combined_egrid_2023 <- egrid_2023 %>% 
+  filter(Plant_state_abbreviation == c("CA", "TX"))
+
+view(combined_egrid_2023)
+
+#Create summary
+
+class(combined_egrid_2023$Generator_nameplate_capacity_MW)
+
+combined_egrid_2023$Generator_nameplate_capacity_MW <-
+  as.numeric(combined_egrid_2023$Generator_nameplate_capacity_MW)
+
+cap_summary <- combined_egrid_2023 %>% 
+  group_by(Plant_state_abbreviation, Generator_primary_fuel) %>% 
+  summarize(Capacity =
+              sum(Generator_nameplate_capacity_MW, na.rm = TRUE)) %>%
+  ungroup()
+
+cap_summary
+```
+
+# Visualize electricity capacity in TX and CA
+
+```{r fig.height=6, warning=FALSE}
+
+#Plot graph in new code chunk
+#Modify figure height in code chunk header
+
+ggplot(data = cap_summary,
+       aes(x = Generator_primary_fuel,
+           y = Capacity,
+           color = Plant_state_abbreviation,
+           fill = Plant_state_abbreviation)) +
+  geom_bar(stat = "identity", color = "black", size = 0.1) +
+  facet_grid(.~Plant_state_abbreviation) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  theme_bw() +
+  labs(x = "Generator Primary Fuel",
+       y = "Sum of Capacity (MW)",
+       title = "Electricity Generation Capacity (MW),
+       Across Fuel Types in California and Texas",
+       fill = "State") +
+    theme(plot.caption.position = "plot",
+    plot.caption = element_text(hjust = 0)) + 
+  theme(legend.position = "bottom")
+
+
+```
+
+# Visualize plant data
+
+```{r}
+#Load in plant 2023 data
+#Only load in sheet 3
+#This is raw data on electricity generators in the U.S.
+
+plant_2023 <- read_xlsx("egrid2023_data.xlsx",
+                        sheet = 4)
+
+```
+
+# Data Wrangling
+
+```{r}
+#view(egrid_2023)
+#add underscore to column names for coding
+plant_2023 <- inject_underscore(plant_2023)
+View(plant_2023)
+
+colnames(plant_2023)[colnames(plant_2023) == 'Plant_nameplate_capacity_(MW)'] <-
+  'Plant_nameplate_capacity_MW'
+
+#remove first row, repetitive names
+plant_2023[-c(1), ]
+
+#Create two separate data frames for CA and TX
+
+CA_plant_2023 <- plant_2023 %>% 
+  filter(Plant_state_abbreviation == "CA")
+
+TX_plant_2023 <- plant_2023 %>% 
+  filter(Plant_state_abbreviation == "TX")
+
+#view(CA_plant_2023)
+#view(TX_plant_2023)
+
+#Both states in same dataset
+combined_plant_2023 <- plant_2023 %>% 
+  filter(Plant_state_abbreviation == c("CA", "TX"))
+
+view(combined_plant_2023)
+
+#Create summary
+
+class(combined_plant_2023$Plant_nameplate_capacity_MW)
+
+combined_plant_2023$Plant_nameplate_capacity_MW <-
+  as.numeric(combined_plant_2023$Plant_nameplate_capacity_MW)
+
+cap_summary <- combined_plant_2023 %>% 
+  group_by(Plant_state_abbreviation, Plant_primary_fuel_category) %>% 
+  summarize(Capacity =
+              sum(Plant_nameplate_capacity_MW, na.rm = TRUE)) %>%
+  ungroup()
+
+cap_summary
+
+```
+
+# Visualize electricity capacity in TX and CA
+
+```{r fig.height=6, warning=FALSE}
+
+#Plot graph in new code chunk
+#Modify figure height in code chunk header
+
+plot1 <- ggplot(data = cap_summary,
+       aes(x = Capacity,
+           y = Plant_primary_fuel_category,
+           color = Plant_state_abbreviation,
+           fill = Plant_state_abbreviation)) +
+  geom_bar(stat = "identity", color = "black", size = 0.1) +
+  facet_grid(.~Plant_state_abbreviation) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  theme_bw() +
+  labs(x = "Sum of Capacity (MW)",
+       y = "Plant Primary Fuel",
+       title = "Electricity Generation Capacity (MW),
+       Across Fuel Types in California and Texas",
+       fill = "State", 
+       caption = "This graph portrays the sum of generation capacity
+       in Texas and California by fuel type. Texas (in light blue)
+       appears to have more coal, wind and natural gas capacity
+       compared to California (in pink). On the other hand,
+       California has more hydroelectric and solar power capacity
+       than Texas.") +
+    theme(plot.caption.position = "plot",
+    plot.caption = element_text(hjust = 0)) + 
+  theme(legend.position = "bottom")  +
+  scale_fill_manual(values = c("pink", "lightblue"))
+
+ggsave(filename="Comparing_Cap_1", 
+       plot=plot1)
+
+```
+
+```{r fig.width=6, warning=FALSE}
+#Plot graph in new code chunk
+#Modify figure height in code chunk header
+
+plot2 <- ggplot(data = cap_summary,
+       aes(x = Plant_primary_fuel_category,
+           y = Capacity,
+           color = Plant_state_abbreviation,
+           fill = Plant_state_abbreviation)) +
+  geom_bar(stat = "identity", color = "black", size = 0.1) +
+  facet_grid(.~Plant_state_abbreviation) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  theme_bw() +
+  labs(x = "Plant Primary Fuel",
+       y = "Sum of Capacity (MW)",
+       title = "Electricity Generation Capacity (MW),
+       Across Fuel Types in California and Texas",
+       fill = "State") +
+    theme(plot.caption.position = "plot",
+    plot.caption = element_text(hjust = 0)) + 
+  theme(legend.position = "bottom")  +
+  scale_fill_manual(values = c("pink", "lightblue")) +
+  theme(text = element_text(size=10)) +
+  theme(axis.text.x = element_text (angle=90, vjust=.5, hjust=1))
+
+ggsave(filename="Comparing_Cap_2", 
+       plot=plot2)
+
+```
 

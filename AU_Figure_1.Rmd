@@ -197,18 +197,18 @@ plot1 <- ggplot(data = cap_summary,
        title = "Electricity Generation Capacity (MW),
        Across Fuel Types in California and Texas",
        fill = "State", 
-       caption = "This graph portrays the sum of generation capacity
-       in Texas and California by fuel type. Texas (in light blue)
-       appears to have more coal, wind and natural gas capacity
-       compared to California (in pink). On the other hand,
-       California has more hydroelectric and solar power capacity
-       than Texas.") +
+       caption =
+"This graph portrays the sum of generation capacity in Texas and
+California by fuel type. Texas (in light blue) appears to have more
+coal, wind and natural gas capacity compared to California (in pink).
+On the other hand, California has more hydroelectric and solar power
+capacity than Texas.") +
     theme(plot.caption.position = "plot",
     plot.caption = element_text(hjust = 0)) + 
   theme(legend.position = "bottom")  +
   scale_fill_manual(values = c("pink", "lightblue"))
 
-ggsave(filename="Comparing_Cap_1", 
+ggsave(filename="Comparing_Cap_1.jpg", 
        plot=plot1)
 
 ```
@@ -231,7 +231,13 @@ plot2 <- ggplot(data = cap_summary,
        y = "Sum of Capacity (MW)",
        title = "Electricity Generation Capacity (MW),
        Across Fuel Types in California and Texas",
-       fill = "State") +
+       fill = "State",
+       caption = 
+"This graph portrays the sum of generation capacity in Texas and
+California by fuel type. Texas (in light blue) appears to have more
+coal, wind and natural gas capacity compared to California (in pink).
+On the other hand, California has more hydroelectric and solar power
+capacity than Texas.") +
     theme(plot.caption.position = "plot",
     plot.caption = element_text(hjust = 0)) + 
   theme(legend.position = "bottom")  +
@@ -239,7 +245,7 @@ plot2 <- ggplot(data = cap_summary,
   theme(text = element_text(size=10)) +
   theme(axis.text.x = element_text (angle=90, vjust=.5, hjust=1))
 
-ggsave(filename="Comparing_Cap_2", 
+ggsave(filename="Comparing_Cap_2.jpg", 
        plot=plot2)
 
 ```

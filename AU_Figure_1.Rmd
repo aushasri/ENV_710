@@ -194,8 +194,8 @@ plot1 <- ggplot(data = cap_summary,
   theme_bw() +
   labs(x = "Sum of Capacity (MW)",
        y = "Plant Primary Fuel",
-       title = "Electricity Generation Capacity (MW),
-       Across Fuel Types in California and Texas",
+       title = "Electricity Generation Capacity (MW) by Fuel Type,
+       in California and Texas",
        fill = "State", 
        caption =
 "This graph portrays the sum of generation capacity in Texas and
@@ -229,8 +229,8 @@ plot2 <- ggplot(data = cap_summary,
   theme_bw() +
   labs(x = "Plant Primary Fuel",
        y = "Sum of Capacity (MW)",
-       title = "Electricity Generation Capacity (MW),
-       Across Fuel Types in California and Texas",
+       title = "Electricity Generation Capacity (MW) by Fuel Type,
+       in California and Texas",
        fill = "State",
        caption = 
 "This graph portrays the sum of generation capacity in Texas and

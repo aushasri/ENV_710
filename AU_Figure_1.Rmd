@@ -187,7 +187,7 @@ plot1 <- ggplot(data = cap_summary,
            y = Plant_primary_fuel_category,
            color = Plant_state_abbreviation,
            fill = Plant_state_abbreviation)) +
-  geom_bar(stat = "identity", color = "black", size = 0.1) +
+  geom_bar(stat = "identity", color = "black", size = 0.5) +
   facet_grid(.~Plant_state_abbreviation) +
   theme_bw() +
   theme(legend.position = "none") +
@@ -203,7 +203,9 @@ California and Texas, 2023",
 California by fuel type. Texas (in light blue) appears to have more
 coal, wind and natural gas capacity compared to California (in pink).
 On the other hand, California has more hydroelectric and solar power
-capacity than Texas.") +
+capacity than Texas. As stated in the EGrid 2023 technical guide,
+the fuel category of OTF is waste heat sources, and the OFSL fuel type
+refers to other fossil fuels.") +
     theme(plot.caption.position = "plot",
     plot.caption = element_text(hjust = 0)) + 
   theme(legend.position = "bottom")  +
@@ -223,7 +225,7 @@ plot2 <- ggplot(data = cap_summary,
            y = Capacity,
            color = Plant_state_abbreviation,
            fill = Plant_state_abbreviation)) +
-  geom_bar(stat = "identity", color = "black", size = 0.1) +
+  geom_bar(stat = "identity", color = "black", size = 0.5) +
   facet_grid(.~Plant_state_abbreviation) +
   theme_bw() +
   theme(legend.position = "none") +
@@ -239,7 +241,9 @@ California and Texas, 2023",
 California by fuel type. Texas (in light blue) appears to have more
 coal, wind and natural gas capacity compared to California (in pink).
 On the other hand, California has more hydroelectric and solar power
-capacity than Texas.") +
+capacity than Texas. As stated in the EGrid 2023 technical guide,
+the fuel category of OTF is waste heat sources, and the OFSL fuel type
+refers to other fossil fuels.") +
     theme(plot.caption.position = "plot",
     plot.caption = element_text(hjust = 0)) + 
   theme(legend.position = "bottom")  +

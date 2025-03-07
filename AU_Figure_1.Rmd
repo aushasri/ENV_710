@@ -200,18 +200,22 @@ California and Texas, 2023",
        fill = "State", 
        caption =
 "This graph portrays the sum of generation capacity in Texas and
-California by fuel type. Texas (in light blue) appears to have more
-coal, wind and natural gas capacity compared to California (in pink).
-On the other hand, California has more hydroelectric and solar power
-capacity than Texas.
+California by fuel type. The axis depicting the sum of generation
+capacity has undergone a log transformation. This axis reads as an
+exponential scale.
 
-As stated in the EGrid 2023 technical guide,
-the fuel category of OTHF is dervived from waste heat or unknown
-sources. The OFSL fuel type refers to other fossil fuels.") +
+Texas (in light blue) appears to have more coal, wind and natural gas
+capacity compared to California (in pink). On the other hand,
+California has more hydroelectric and solar power capacity than Texas.
+
+As stated in the EGrid 2023 technical guide, the fuel category of OTHF
+is dervived from waste heat or unknown sources. The OFSL fuel type
+refers to other fossil fuels.") +
     theme(plot.caption.position = "plot",
     plot.caption = element_text(hjust = 0)) + 
   theme(legend.position = "bottom")  +
-  scale_fill_manual(values = c("pink", "lightblue"))
+  scale_fill_manual(values = c("pink", "lightblue")) +
+  scale_x_log10()
 
 ggsave(filename="Comparing_Cap_1.jpg", 
        plot=plot1)
@@ -240,10 +244,13 @@ California and Texas, 2023",
        fill = "State",
        caption = 
 "This graph portrays the sum of generation capacity in Texas and
-California by fuel type. Texas (in light blue) appears to have more
-coal, wind and natural gas capacity compared to California (in pink).
-On the other hand, California has more hydroelectric and solar power
-capacity than Texas.
+California by fuel type. The axis depicting the sum of generation
+capacity has undergone a log transformation. This axis reads as an
+exponential scale.
+
+Texas (in light blue) appears to have more coal, wind and natural gas
+capacity compared to California (in pink). On the other hand,
+California has more hydroelectric and solar power capacity than Texas.
 
 As stated in the EGrid 2023 technical guide,
 the fuel category of OTHF is dervived from waste heat or unknown
@@ -253,7 +260,8 @@ sources. The OFSL fuel type refers to other fossil fuels.") +
   theme(legend.position = "bottom")  +
   scale_fill_manual(values = c("pink", "lightblue")) +
   theme(text = element_text(size=10)) +
-  theme(axis.text.x = element_text (angle=90, vjust=.5, hjust=1))
+  theme(axis.text.x = element_text (angle=90, vjust=.5, hjust=1)) +
+  scale_y_log10()
 
 ggsave(filename="Comparing_Cap_2.jpg", 
        plot=plot2)

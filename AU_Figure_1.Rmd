@@ -220,6 +220,7 @@ refers to other fossil fuels.") +
 ggsave(filename="Comparing_Cap_1.jpg", 
        plot=plot1)
 
+plot1
 ```
 
 ```{r fig.width=6, warning=FALSE}

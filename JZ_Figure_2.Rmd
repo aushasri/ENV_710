@@ -22,7 +22,7 @@ library(viridis)
 library(vcdExtra)
 library(ggplot2)
 library(cowplot)
-
+library(gridExtra)
 #Load in egrid 2023 data
 #Only load in sheet 3
 #This is raw data on electricity generators in the U.S.
@@ -46,30 +46,15 @@ inject_underscore <- function(df) {
 
 #next, operate function on data frame
 egrid_2023 <- inject_underscore(egrid_2023)
-View(egrid_2023)
 
 colnames(egrid_2023)[colnames(egrid_2023) == 'Generator_nameplate_capacity_(MW)'] <-
   'Generator_nameplate_capacity_MW'
 
 #remove first row, repetitive names
 egrid_2023[-c(1), ]
-
-#Create two separate data frames for CA and TX
-
-CA_egrid_2023 <- egrid_2023 %>% 
-  filter(Plant_state_abbreviation == "CA")
-
-TX_egrid_2023 <- egrid_2023 %>% 
-  filter(Plant_state_abbreviation == "TX")
-
-#view(CA_egrid_2023)
-#view(TX_egrid_2023)
-
 #Both states in same dataset
 combined_egrid_2023 <- egrid_2023 %>% 
   filter(Plant_state_abbreviation == c("CA", "TX"))
-
-view(combined_egrid_2023)
 
 #Create summary
 
@@ -78,101 +63,197 @@ class(combined_egrid_2023$Generator_nameplate_capacity_MW)
 combined_egrid_2023$Generator_nameplate_capacity_MW <-
   as.numeric(combined_egrid_2023$Generator_nameplate_capacity_MW)
 
-cap_summary <- combined_egrid_2023 %>% 
-  group_by(Plant_state_abbreviation, Generator_primary_fuel) %>% 
-  summarize(Capacity =
-              sum(Generator_nameplate_capacity_MW, na.rm = TRUE)) %>%
+combined_egrid_2023$`Generator_annual_net_generation_(MWh)` <-
+  as.numeric(combined_egrid_2023$`Generator_annual_net_generation_(MWh)`)
+
+fig2_summary <- combined_egrid_2023 %>% 
+  group_by(Plant_state_abbreviation) %>% 
+  summarize(Nameplate_Capacity =
+              sum(Generator_nameplate_capacity_MW, na.rm = TRUE),
+            Annual_Generation = 
+              sum(`Generator_annual_net_generation_(MWh)`, na.rm = TRUE)) %>%
   ungroup()
 
-cap_summary
+fig2_summary
 ```
 
-# Visualize electricity capacity in TX and CA
+# Visualize electricity capacity and annual generation in TX and CA in 2023
 
 ```{r fig.height=6, warning=FALSE}
 
-#Plot graph in new code chunk
-#Modify figure height in code chunk header
+state_colors <- c("CA" = "pink", "TX" = "lightblue")
 
-ggplot(data = cap_summary,
-       aes(x = Generator_primary_fuel,
-           y = Capacity,
-           color = Plant_state_abbreviation,
-           fill = Plant_state_abbreviation)) +
-  geom_bar(stat = "identity", color = "black", size = 0.1) +
-  facet_grid(.~Plant_state_abbreviation) +
-  theme_bw() +
-  theme(legend.position = "none") +
-  theme_bw() +
-  labs(x = "Generator Primary Fuel",
-       y = "Sum of Capacity (MW)",
-       title = "Electricity Generation Capacity (MW),
-       Across Fuel Types in California and Texas",
-       fill = "State") +
-    theme(plot.caption.position = "plot",
-    plot.caption = element_text(hjust = 0)) + 
-  theme(legend.position = "bottom")
+# Plot for Nameplate Capacity
 
+graph_nc <- ggplot(fig2_summary, aes(x = Plant_state_abbreviation, 
+                                     y = Nameplate_Capacity, 
+                                     fill = Plant_state_abbreviation)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Nameplate Capacity and Annual Generation in California and Texas in 2023",
+       y = "Nameplate Capacity (MW)") +
+  theme_minimal() +
+  scale_fill_manual(values = state_colors)+
+  theme(legend.position = "none")
 
-```
+# Plot for Annual Generation
+graph_generation<- ggplot(fig2_summary, aes(x = Plant_state_abbreviation, 
+                                            y = Annual_Generation, 
+                                            fill = Plant_state_abbreviation)) +
+  geom_bar(stat = "identity") +
+  labs(y = "Annual Generation (MWh)") +
+  theme_minimal() +
+  scale_fill_manual(values = state_colors)+
+    theme(legend.position = "none")
 
-# Visualize plant data
-
-```{r}
-#Load in plant 2023 data
-#Only load in sheet 3
-#This is raw data on electricity generators in the U.S.
-
-plant_2023 <- read_xlsx("egrid2023_data.xlsx",
-                        sheet = 4)
+grid.arrange(graph_nc, graph_generation, ncol = 2)
 
 ```
+
 
 # Data Wrangling
 
 ```{r}
-#view(egrid_2023)
-#add underscore to column names for coding
-plant_2023 <- inject_underscore(plant_2023)
-View(plant_2023)
+# Define colors for states
+state_colors <- c("CA" = "pink", "TX" = "lightblue")
 
-colnames(plant_2023)[colnames(plant_2023) == 'Plant_nameplate_capacity_(MW)'] <-
-  'Plant_nameplate_capacity_MW'
+# Scale Annual Generation for secondary y-axis visualization
+scale_factor <- max(fig2_summary$Nameplate_Capacity) / max(fig2_summary$Annual_Generation)
 
-#remove first row, repetitive names
-plant_2023[-c(1), ]
+# Create the plot
+graph_combined <- ggplot(fig2_summary, aes(x = Plant_state_abbreviation)) +
+  # Nameplate Capacity Bars
+  #geom_bar(aes(y = Nameplate_Capacity, fill = Plant_state_abbreviation), 
+           #stat = "identity", position = "dodge", width = 0.4, alpha = 0.7) +
+  # Annual Generation Bars (scaled)
+  geom_bar(aes(y = Annual_Generation, fill = Plant_state_abbreviation), 
+           stat = "identity", position = "dodge", width = 0.4, alpha = 0.4) +
+  # Left Y-Axis
+  scale_y_continuous(
+    name = "Nameplate Capacity (MW)",
+    sec.axis = sec_axis(~ . / scale_factor, name = "Annual Generation (MWh)", 
+                        labels = scales::comma)
+  ) +
+  labs(title = "Nameplate Capacity and Annual Generation 
+       in California and Texas (2023)",
+       x = "State") +
+  theme_minimal() +
+  scale_fill_manual(values = state_colors) +
+  theme(legend.position = "none", text = element_text(size = 14))
 
-#Create two separate data frames for CA and TX
+# Print the combined graph
+print(graph_combined)
+```
 
-CA_plant_2023 <- plant_2023 %>% 
-  filter(Plant_state_abbreviation == "CA")
+```{r}
+fig2_summary_long <- fig2_summary %>%
+  pivot_longer(cols = c(Nameplate_Capacity, Annual_Generation),
+               names_to = "Metric",
+               values_to = "Value")
 
-TX_plant_2023 <- plant_2023 %>% 
-  filter(Plant_state_abbreviation == "TX")
+# **Improved Scaling Factor**
+scale_factor <- max(fig2_summary$Annual_Generation) / max(fig2_summary$Nameplate_Capacity)
 
-#view(CA_plant_2023)
-#view(TX_plant_2023)
+# Adjust data to properly scale both metrics
+fig2_summary_long <- fig2_summary_long %>%
+  mutate(Value_Scaled = ifelse(Metric == "Annual_Generation", Value / scale_factor, Value))
 
-#Both states in same dataset
-combined_plant_2023 <- plant_2023 %>% 
-  filter(Plant_state_abbreviation == c("CA", "TX"))
+fig2_summary_long <- fig2_summary_long %>%
+  mutate(Value_Scaled = ifelse(Metric == "Annual_Generation", Value / scale_factor, Value),
+         Label = case_when(
+           Plant_state_abbreviation == "CA" & Metric == "Nameplate_Capacity" ~ "CA Capacity",
+           Plant_state_abbreviation == "TX" & Metric == "Nameplate_Capacity" ~ "TX Capacity",
+           Plant_state_abbreviation == "CA" & Metric == "Annual_Generation" ~ "CA Generation",
+           Plant_state_abbreviation == "TX" & Metric == "Annual_Generation" ~ "TX Generation"
+         ))
 
-view(combined_plant_2023)
+graph_combined <- ggplot(fig2_summary_long, aes(x = Label, 
+                                                y = Value_Scaled, 
+                                                fill = Plant_state_abbreviation)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.6), width = 0.5, alpha = 0.8) +
+  scale_y_continuous(
+    name = "Nameplate Capacity (MW)", 
+    sec.axis = sec_axis(~ . * scale_factor, name = "Annual Generation (MWh)", labels = scales::comma)
+  ) +
+  labs(title = "Nameplate Capacity and Annual Generation
+       in California and Texas (2023)",
+       x = "State and Metric") +
+  theme_minimal() +
+  scale_fill_manual(values = state_colors) +
+  theme(
+    legend.position = "none", 
+    axis.text.x = element_text(angle = 0, hjust = 0.5, size = 14),  # Straight, readable x-axis labels
+    axis.text.y = element_text(size = 14),  # Increase y-axis label size
+    axis.title.x = element_text(size = 16),  # Make axis title larger
+    axis.title.y = element_text(size = 16),  # Make left y-axis title larger
+    plot.title = element_text(size = 18, face = "bold"),  # Enhance title
+    text = element_text(size = 14)  # Increase overall text size
+  )
 
-#Create summary
-
-class(combined_plant_2023$Plant_nameplate_capacity_MW)
-
-combined_plant_2023$Plant_nameplate_capacity_MW <-
-  as.numeric(combined_plant_2023$Plant_nameplate_capacity_MW)
-
-cap_summary <- combined_plant_2023 %>% 
-  group_by(Plant_state_abbreviation, Plant_primary_fuel_category) %>% 
-  summarize(Capacity =
-              sum(Plant_nameplate_capacity_MW, na.rm = TRUE)) %>%
-  ungroup()
-
-cap_summary
+# Print the combined graph
+print(graph_combined)
 
 ```
+```{r}
+# Reshape data to long format
+fig2_summary_long <- fig2_summary %>%
+  pivot_longer(cols = c(Nameplate_Capacity, Annual_Generation),
+               names_to = "Metric",
+               values_to = "Value")
+
+# Define colors for Capacity and Generation (instead of states)
+metric_colors <- c("Capacity" = "lightblue", "Generation" = "pink")
+
+# **Improved Scaling Factor**
+scale_factor <- max(fig2_summary$Annual_Generation) / max(fig2_summary$Nameplate_Capacity)
+
+# Adjust data to properly scale both metrics
+fig2_summary_long <- fig2_summary_long %>%
+  mutate(Value_Scaled = ifelse(Metric == "Annual_Generation", Value / scale_factor, Value))
+
+# **Set proper factor levels for grouping by state**
+fig2_summary_long$Metric <- factor(fig2_summary_long$Metric, 
+                                   levels = c("Nameplate_Capacity", "Annual_Generation"),
+                                   labels = c("Capacity", "Generation"))
+
+# Create the plot with **grouped bars by state**
+graph_combined <- ggplot(fig2_summary_long, aes(x = Plant_state_abbreviation, 
+                                                y = Value_Scaled, 
+                                                fill = Metric)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.6), width = 0.5, alpha = 0.8) +
+  scale_y_continuous(
+    name = "Nameplate Capacity (MW)", 
+    sec.axis = sec_axis(~ . * scale_factor, name = "Annual Generation (MWh)", labels = scales::comma)
+  ) +
+  labs(title = "Nameplate Capacity and Annual Generation
+       in California and Texas (2023)",
+       x = "State",
+       caption =
+"This graph shows the total installed nameplate capacity and annual 
+electricity generation in Texas and California in 2023. 
+
+The graph illustrates that both annual electricity generation and capacity
+are higher in Texas than in California. Annual electricity generated in Texas 
+in 2023 is more than two times of generation in California.") +
+  theme_minimal() +
+  scale_fill_manual(values = metric_colors) +
+  theme(
+    legend.position = "bottom", 
+    legend.title = element_blank(),
+    axis.text.x = element_text(size = 14),  # No rotation, as only two labels (CA, TX)
+    axis.text.y = element_text(size = 14),  # Increase y-axis label size
+    axis.title.x = element_text(size = 16),  # Make axis title larger
+    axis.title.y = element_text(size = 16),  # Make left y-axis title larger
+    plot.title = element_text(size = 18),  # Enhance title
+    text = element_text(size = 14),
+    plot.caption.position = "plot",
+    plot.caption = element_text(hjust = 0)# Increase overall text size
+  )
+
+ggsave(filename="Figure 2.jpg", 
+       plot=graph_combined)
+
+# Print the combined graph
+print(graph_combined)
+```
+
 

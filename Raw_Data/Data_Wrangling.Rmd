@@ -1,0 +1,213 @@
+---
+title: "Data_Wrangling"
+author: "Asreeta Ushasri"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+```{r message=FALSE, warning=FALSE}
+#Set up
+
+library(tidyverse)
+library(dplyr)
+library(here)
+library(readxl)
+#install.packages("openxlsx")
+library(openxlsx)
+library(plyr)
+getwd()
+
+```
+
+
+
+```{r}
+#Import ATB data
+#Solar PV excel sheet has many tables of data
+#Need to import data as separate data frames into R
+#Specify cell range using read_xlsx function
+#Make sure to install read_xl package
+
+Solar_ATB <- read.csv("2024_ATB.csv")
+#view(Solar_ATB)
+
+#Rename columns
+
+Solar_ATB <- Solar_ATB %>% 
+  rename("Class" = X.9,
+         "Technology" = X.10,
+    "Year_2022" = https...atb.nrel.gov.electricity.2024.utility.scale_pv,
+    "Year_2023" = X.11,
+    "Year_2024" = X.12,
+    "Year_2025" = X.13,
+    "Year_2026" = X.14)
+
+#view(Solar_ATB)
+
+#Need to remove symbols, spaces, etc.
+
+Solar_ATB$Class <- gsub("%", "", Solar_ATB$Class)
+Solar_ATB$Class <- gsub(",", "", Solar_ATB$Class)
+Solar_ATB$Class <- gsub("\\$", "", Solar_ATB$Class)
+Solar_ATB$Class <- gsub(" ", "_", Solar_ATB$Class)
+Solar_ATB$Class <- gsub("-", "_", Solar_ATB$Class)
+Solar_ATB$Technology <- gsub("%", "", Solar_ATB$Technology)
+Solar_ATB$Technology <- gsub(",", "", Solar_ATB$Technology)
+Solar_ATB$Technology <- gsub("\\$", "", Solar_ATB$Technology)
+Solar_ATB$Technology <- gsub(" ", "_", Solar_ATB$Technology)
+Solar_ATB$Technology <- gsub("-", "_", Solar_ATB$Technology)
+Solar_ATB$Year_2022 <- gsub("%", "", Solar_ATB$Year_2022)
+Solar_ATB$Year_2022 <- gsub(",", "", Solar_ATB$Year_2022)
+Solar_ATB$Year_2022 <- gsub("\\$", "", Solar_ATB$Year_2022)
+Solar_ATB$Year_2023 <- gsub("%", "", Solar_ATB$Year_2023)
+Solar_ATB$Year_2023 <- gsub(",", "", Solar_ATB$Year_2023)
+Solar_ATB$Year_2023 <- gsub("\\$", "", Solar_ATB$Year_2023)
+Solar_ATB$Year_2024 <- gsub("%", "", Solar_ATB$Year_2024)
+Solar_ATB$Year_2024 <- gsub(",", "", Solar_ATB$Year_2024)
+Solar_ATB$Year_2024 <- gsub("\\$", "", Solar_ATB$Year_2024)
+Solar_ATB$Year_2025 <- gsub("%", "", Solar_ATB$Year_2025)
+Solar_ATB$Year_2025 <- gsub(",", "", Solar_ATB$Year_2025)
+Solar_ATB$Year_2025 <- gsub("\\$", "", Solar_ATB$Year_2025)
+Solar_ATB$Year_2026 <- gsub("%", "", Solar_ATB$Year_2026)
+Solar_ATB$Year_2026 <- gsub(",", "", Solar_ATB$Year_2026)
+Solar_ATB$Year_2026 <- gsub("\\$", "", Solar_ATB$Year_2026)
+
+#Create separate DF for each variable
+
+Assumptions <- Solar_ATB[51:81, 10:17]
+Net_Cap_Factor <- Solar_ATB[86:116, 10:17]
+Annual_Energy_Production <- Solar_ATB[118:148, 10:17]
+CAPEX <- Solar_ATB[150:180, 10:17]
+Construct_Finance_Costs <- Solar_ATB[182:212, 10:17]
+Overnight_Cap_Costs <- Solar_ATB[214:244, 10:17]
+Fixed_OM <- Solar_ATB[246:276, 10:17]
+Variable_OM <- Solar_ATB[278:308, 10:17]
+Grid_Connect_Cost <- Solar_ATB[313:343, 10:17]
+LCOE <- Solar_ATB[346:376, 10:17]
+Tax_Credit <- Solar_ATB[378:381, 10:17]
+
+#view(LCOE)
+```
+
+
+```{r}
+#Create an average value for the five years
+
+#Net Cap Factor
+Net_Cap_Factor <- Net_Cap_Factor %>%
+  mutate(Net_Cap_Factor = rowMeans(select(., Year_2022:Year_2026) %>% 
+                             mutate(across(everything(), as.numeric)),
+                            na.rm = TRUE))
+Net_Cap_Factor_processed <- Net_Cap_Factor%>% 
+  select(Class, Technology, Net_Cap_Factor)
+
+
+#Process annual energy production
+Annual_Energy_Production <- Annual_Energy_Production %>%
+  mutate(Annual_Energy_Production =
+           rowMeans(select(., Year_2022:Year_2026) %>% 
+                             mutate(across(everything(), as.numeric)),
+                            na.rm = TRUE))
+Annual_Energy_Production_processed <- Annual_Energy_Production %>% 
+  select(Class, Technology, Annual_Energy_Production)
+
+#Next, process capex
+CAPEX <- CAPEX %>%
+  mutate(CAPEX =
+           rowMeans(select(., Year_2022:Year_2026) %>% 
+                             mutate(across(everything(), as.numeric)),
+                            na.rm = TRUE))
+CAPEX_processed <- CAPEX %>% 
+  select(Class, Technology, CAPEX)
+
+#Processing CFC next
+Construct_Finance_Costs <- Construct_Finance_Costs %>%
+  mutate(Construct_Finance_Costs =
+           rowMeans(select(., Year_2022:Year_2026) %>% 
+                             mutate(across(everything(), as.numeric)),
+                            na.rm = TRUE))
+Construct_Finance_Costs_processed <- Construct_Finance_Costs %>% 
+  select(Class, Technology, Construct_Finance_Costs)
+
+#Overnight Capacity Costs
+Overnight_Cap_Costs <- Overnight_Cap_Costs %>%
+  mutate(Overnight_Cap_Costs =
+           rowMeans(select(., Year_2022:Year_2026) %>% 
+                             mutate(across(everything(), as.numeric)),
+                            na.rm = TRUE))
+Overnight_Cap_Costs_processed <- Overnight_Cap_Costs %>% 
+  select(Class, Technology, Overnight_Cap_Costs)
+
+#FixedO&M
+Fixed_OM <- Fixed_OM %>%
+  mutate(Fixed_OM =
+           rowMeans(select(., Year_2022:Year_2026) %>% 
+                             mutate(across(everything(), as.numeric)),
+                            na.rm = TRUE))
+Fixed_OM_processed <- Fixed_OM %>% 
+  select(Class, Technology, Fixed_OM)
+
+#VariableO&M
+Variable_OM <- Variable_OM %>%
+  mutate(Variable_OM =
+           rowMeans(select(., Year_2022:Year_2026) %>% 
+                             mutate(across(everything(), as.numeric)),
+                            na.rm = TRUE))
+Variable_OM_processed <- Variable_OM %>% 
+  select(Class, Technology, Variable_OM)
+
+#GridCC
+Grid_Connect_Cost <- Grid_Connect_Cost %>%
+  mutate(Grid_Connect_Cost =
+           rowMeans(select(., Year_2022:Year_2026) %>% 
+                             mutate(across(everything(), as.numeric)),
+                            na.rm = TRUE))
+Grid_Connect_Cost_processed <- Grid_Connect_Cost %>% 
+  select(Class, Technology, Grid_Connect_Cost)
+
+
+#LCOE processing
+LCOE <- LCOE %>%
+  mutate(LCOE = rowMeans(select(., Year_2022:Year_2026) %>% 
+                             mutate(across(everything(), as.numeric)),
+                            na.rm = TRUE))
+
+LCOE_processed <- LCOE %>% 
+  select(Class, Technology, LCOE)
+
+#view(LCOE_processed)
+
+```
+
+
+```{r}
+#Combine data frames
+#view(Grid_Connect_Cost_processed)
+
+dfs <- list(Net_Cap_Factor_processed,
+                             Annual_Energy_Production_processed,
+                             CAPEX_processed,
+                             Construct_Finance_Costs_processed,
+                             Overnight_Cap_Costs_processed,
+                             Fixed_OM_processed,
+                             Variable_OM_processed,
+                             Grid_Connect_Cost_processed,
+                             LCOE_processed)
+
+Solar_ATB_Processed <- join_all(dfs,
+                             by = c("Class", "Technology"),
+                             type = "full")
+
+#view(Solar_ATB_Processed)
+#Remove the last row, blank/NA
+
+Solar_ATB_Processed <- Solar_ATB_Processed[-31, ]
+
+#view(Solar_ATB_Processed)
+getwd()
+
+#Save processed data in new folder
+
+write.csv(Solar_ATB_Processed, "C:/Users/Ashree/OneDrive/Desktop/Spring_2025/Stats_Modeling/ENV_710/Processed_Data/Solar_ATB_Processed.csv")
+
+```
+

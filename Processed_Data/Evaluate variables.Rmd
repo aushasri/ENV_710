@@ -1,0 +1,21 @@
+---
+title: "Evaluate variables"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(here)
+library(readxl)
+#install.packages("openxlsx")
+library(openxlsx)
+library(plyr)
+getwd()
+```
+
+
+```{r}
+Processed_ATB <- read_csv("Solar_ATB_Processed.csv")
+```
+

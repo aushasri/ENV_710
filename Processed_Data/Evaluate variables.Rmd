@@ -39,7 +39,7 @@ ggplot(data = Processed_ATB, aes(x=Technology,y=LCOE,color=Technology))+
 # We can see Advanced technology has lowest LCOE, and conservative ones have higher LCOE
 ```
 ```{r}
-ggplot(data = Processed_ATB, aes(y=LCOE, x= Class,fill=Class))+
+ggplot(data = Processed_ATB, aes(y=LCOE, x= Class,color=Class))+
   geom_boxplot()+
   #facet_wrap(~Class)+
   theme_bw()

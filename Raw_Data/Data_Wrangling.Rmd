@@ -197,6 +197,23 @@ Solar_ATB_Processed <- join_all(dfs,
                              by = c("Class", "Technology"),
                              type = "full")
 
+Solar_ATB_Processed <- Solar_ATB_Processed %>% 
+  mutate(Class = factor(Class, levels = c("Utility_PV___Class_1",
+                                          "Utility_PV___Class_2",
+                                          "Utility_PV___Class_3",
+                                          "Utility_PV___Class_4",
+                                          "Utility_PV___Class_5",
+                                          "Utility_PV___Class_6",
+                                          "Utility_PV___Class_7",
+                                          "Utility_PV___Class_8",
+                                          "Utility_PV___Class_9",
+                                          "Utility_PV___Class_10"),
+                        labels = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)))
+
+
+```
+
+```{r}
 #view(Solar_ATB_Processed)
 #Remove the last row, blank/NA
 

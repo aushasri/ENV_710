@@ -33,16 +33,89 @@ Processed_ATB$Class = factor (Processed_ATB$Class,
 # Visualization
 # Use Rice Rule(2n^(1/3)) to determine bin size
 2*30^(1/3) #6.21, Bin size = 6
+
+# Graph relationship of technology type to LCOE
 ggplot(data = Processed_ATB, aes(x=Technology,y=LCOE,color=Technology))+
   geom_boxplot()+
   theme_bw()
 # We can see Advanced technology has lowest LCOE, and conservative ones have higher LCOE
 ```
 ```{r}
+# Graph relationship of Class type to LCOE
 ggplot(data = Processed_ATB, aes(y=LCOE, x= Class,color=Class))+
   geom_boxplot()+
   #facet_wrap(~Class)+
   theme_bw()
 ```
+```{r}
+# Evaluate whether independent variables are normally distributed
+ggplot(data = Processed_ATB, aes(Net_Cap_Factor))+
+  geom_histogram(bins=6)+
+  theme_bw()
 
+ggplot(data = Processed_ATB, aes(Annual_Energy_Production))+
+  geom_histogram(bins=6)+
+  theme_bw()
+
+ggplot(data = Processed_ATB, aes(CAPEX))+
+  geom_histogram(bins=6)+
+  theme_bw()
+
+ggplot(data = Processed_ATB, aes(Construct_Finance_Costs))+
+  geom_histogram(bins=6)+
+  theme_bw()
+
+ggplot(data = Processed_ATB, aes(Overnight_Cap_Costs))+
+  geom_histogram(bins=6)+
+  theme_bw()
+
+ggplot(data = Processed_ATB, aes(Fixed_OM))+
+  geom_histogram(bins=6)+
+  theme_bw()
+
+ggplot(data = Processed_ATB, aes(Grid_Connect_Cost))+
+  geom_histogram(bins=6)+
+  theme_bw()
+
+ggplot(data = Processed_ATB, aes(Variable_OM))+
+  geom_histogram(bins=6)+
+  theme_bw()
+```
+For initial visualization, we found out that CAPEX, Construction cost, Overnight capital cost, Fixed operation cost, and Grid connection cost only shows three values which is dependent on the technology type. Additionally, variable cost of solar panels is zero. Therefore, we decide not to proceed with all variables mentioned above, and only evaluate technology, class, capacity factor and generations influence on LCOE.
+```{r}
+# Graph relationship between capacity factor and LCOE
+ggplot(data = Processed_ATB, aes(y=LCOE, x=Net_Cap_Factor,
+                                 color=Technology))+
+  geom_jitter()+
+  labs(x= "Net Capacity Factor (%)",
+       y = "LCOE ($/MWh)")+
+  theme_bw()
+# We can see that capacity factor is negatively related to LCOE. Conservative technology tends to cause higher LCOE.
+```
+```{r}
+# Graph relationship between capacity factor and LCOE
+ggplot(data = Processed_ATB, aes(y=LCOE, x=Annual_Energy_Production,
+                                 color = Class))+
+  geom_jitter()+
+  labs(x= "Annual Energy Production (MWh)",
+       y = "LCOE ($/MWh)")+ #Please check if it is MWh
+  theme_bw()
+# Annual Energy production is negatively related to LCOE. It is also interesting 
+# to see that each class is stacked in three, with class 1 having highest production 
+# and lowest LCOE, and class 10 on the opposite end.
+```
+```{r}
+# Evaluate correlation between net capacity factor and annual energy production
+# since they are the only two continuous variables.
+cor.test(x=Processed_ATB$Net_Cap_Factor, y=Processed_ATB$Annual_Energy_Production)
+# The results showed that capacity factor is correlated to annual energy production,
+# therefore we need to place them in different models.
+```
+```{r}
+# Final check: how capacity factor relates to annual energy production
+ggplot(data = Processed_ATB, aes(y=Annual_Energy_Production, x=Net_Cap_Factor,
+                                 color = Class))+
+  geom_jitter()+
+  theme_bw()
+```
 

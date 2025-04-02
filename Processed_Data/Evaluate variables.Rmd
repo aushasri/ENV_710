@@ -81,7 +81,7 @@ ggplot(data = Processed_ATB, aes(Variable_OM))+
   geom_histogram(bins=6)+
   theme_bw()
 ```
-For initial visualization, we found out that CAPEX, Construction cost, Overnight capital cost, Fixed operation cost, and Grid connection cost only shows three values which is dependent on the technology type. Additionally, variable cost of solar panels is zero. Therefore, we decide not to proceed with all variables mentioned above, and only evaluate technology, class, capacity factor and generations influence on LCOE.
+For initial visualization, we found out that CAPEX, Construction cost, Overnight capital cost, Fixed operation cost, and Grid connection cost only shows three values which fully depends on their technology type. Additionally, variable cost of solar panels is zero. Therefore, we decide not to proceed with all variables mentioned above, and only evaluate technology, class, capacity factor and generations influence on LCOE.
 ```{r}
 # Graph relationship between capacity factor and LCOE
 ggplot(data = Processed_ATB, aes(y=LCOE, x=Net_Cap_Factor,

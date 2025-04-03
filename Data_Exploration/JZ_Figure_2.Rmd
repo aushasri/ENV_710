@@ -27,7 +27,9 @@ library(gridExtra)
 #Only load in sheet 3
 #This is raw data on electricity generators in the U.S.
 
-egrid_2023 <- read_xlsx("egrid2023_data.xlsx",
+here()
+
+egrid_2023 <- read_xlsx("C:/Users/Ashree/OneDrive/Desktop/Spring_2025/Stats_Modeling/ENV_710/Raw_Data/egrid2023_data.xlsx",
                         sheet = 3)
 
 ```

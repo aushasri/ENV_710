@@ -1,5 +1,5 @@
 ---
-title: "Linear Model 1"
+title: "Linear Models"
 author: "Asreeta Ushasri"
 date: "04-05-2025"
 output: html_document
@@ -52,6 +52,14 @@ gen2.lm <- lm(LCOE ~
                 Annual_Energy_Production_log,
              data = Solar_ATB_log)
 
+gen3.lm <- lm(LCOE ~
+                Annual_Energy_Production + CAPEX,
+             data = Solar_ATB)
+
+gen4.lm <- lm(LCOE ~
+                Annual_Energy_Production_log + Construct_Finance_Costs,
+             data = Solar_ATB_log)
+
 
 ```
 
@@ -59,6 +67,8 @@ gen2.lm <- lm(LCOE ~
 ```{r}
 
 plot(gen2.lm)
+plot(gen3.lm)
+plot(gen4.lm)
 
 ```
 
@@ -66,20 +76,19 @@ plot(gen2.lm)
 
 ```{r}
 net1.lm <- lm(LCOE ~
-                Net_Cap_Factor + Technology +
-                Class,
+                Net_Cap_Factor + Technology,
              data = Solar_ATB_log)
 
 Solar_ATB_log <- Solar_ATB %>% 
   mutate(Net_Cap_Factor_log =
            log10(Net_Cap_Factor))
 
-net1.lm <- lm(LCOE ~
-                Net_Cap_Factor_log + Technology +
-                Class,
+net2.lm <- lm(LCOE ~
+                Net_Cap_Factor_log + Technology,
              data = Solar_ATB_log)
 
 plot(net1.lm)
+plot(net2.lm)
 
 ```
 

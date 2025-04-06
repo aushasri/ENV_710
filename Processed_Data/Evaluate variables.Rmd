@@ -119,3 +119,4 @@ ggplot(data = Processed_ATB, aes(y=Annual_Energy_Production, x=Net_Cap_Factor,
   theme_bw()
 ```
 
+

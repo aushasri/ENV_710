@@ -5,12 +5,12 @@ output: html_document
 
 ```{r}
 library(tidyverse)
+library(plyr)
 library(dplyr)
 library(here)
 library(readxl)
 #install.packages("openxlsx")
 library(openxlsx)
-library(plyr)
 getwd()
 ```
 
@@ -119,6 +119,24 @@ cor.test(x=Processed_ATB$Net_Cap_Factor, y=Processed_ATB$Annual_Energy_Productio
 ggplot(data = Processed_ATB, aes(y=Annual_Energy_Production, x=Net_Cap_Factor,
                                  color = Class))+
   geom_jitter()+
+  theme_bw()
+```
+```{r}
+# Correlation check between categorical variables and continuous variable
+ggplot(data = Processed_ATB, aes(x=Technology,y=Net_Cap_Factor))+
+  geom_boxplot()+
+  theme_bw()
+
+ggplot(data = Processed_ATB, aes(x=Technology,y=Annual_Energy_Production))+
+  geom_boxplot()+
+  theme_bw()
+
+ggplot(data = Processed_ATB, aes(x=Class,y=Net_Cap_Factor))+
+  geom_boxplot()+
+  theme_bw()
+
+ggplot(data = Processed_ATB, aes(x=Class,y=Annual_Energy_Production))+
+  geom_boxplot()+
   theme_bw()
 ```
 

@@ -1,0 +1,94 @@
+---
+title: "Linear Models"
+author: "Asreeta Ushasri"
+date: "04-05-2025"
+output: html_document
+---
+
+```{r message=FALSE, warning=FALSE}
+#Load packages
+library(tidyverse)
+library(here)
+library(dplyr)
+library(readxl)
+library(openxlsx)
+
+#Load in data
+Solar_ATB <- read.csv("Processed_Data/Solar_ATB_Processed.csv")
+
+#view(Solar_ATB)
+Solar_ATB <- Solar_ATB %>%
+  select(-"X") %>% 
+  select(-"...1")
+
+#view(Solar_ATB)
+
+```
+
+
+
+```{r}
+gen1.lm <- lm(LCOE ~
+                Class + Technology +
+                Annual_Energy_Production,
+             data = Solar_ATB)
+```
+
+
+
+```{r}
+plot(gen1.lm)
+
+```
+
+```{r}
+
+Solar_ATB_log <- Solar_ATB %>% 
+  mutate(Annual_Energy_Production_log =
+           log10(Annual_Energy_Production))
+
+gen2.lm <- lm(LCOE ~
+                Class + Technology +
+                Annual_Energy_Production_log,
+             data = Solar_ATB_log)
+
+gen3.lm <- lm(LCOE ~
+                Annual_Energy_Production + CAPEX,
+             data = Solar_ATB)
+
+gen4.lm <- lm(LCOE ~
+                Annual_Energy_Production_log + Construct_Finance_Costs,
+             data = Solar_ATB_log)
+
+
+```
+
+
+```{r}
+
+plot(gen2.lm)
+plot(gen3.lm)
+plot(gen4.lm)
+
+```
+
+# Testing Net Capacity
+
+```{r}
+net1.lm <- lm(LCOE ~
+                Net_Cap_Factor + Technology,
+             data = Solar_ATB_log)
+
+Solar_ATB_log <- Solar_ATB %>% 
+  mutate(Net_Cap_Factor_log =
+           log10(Net_Cap_Factor))
+
+net2.lm <- lm(LCOE ~
+                Net_Cap_Factor_log + Technology,
+             data = Solar_ATB_log)
+
+plot(net1.lm)
+plot(net2.lm)
+
+```
+

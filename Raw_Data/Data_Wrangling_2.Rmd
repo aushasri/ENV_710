@@ -1,22 +1,18 @@
 ---
-
-title: "Data_Wrangling"
-author: "Asreeta Ushasri"
-date: "`r Sys.Date()`"
-output: pdf_document
+title: "Data_Wrangling_2"
+output: html_document
 
 ---
-
 ```{r message=FALSE, warning=FALSE}
 #Set up
-
-library(tidyverse)
+library(plyr)
 library(dplyr)
+library(tidyverse)
+#install.packages("dplyr")
 library(here)
 library(readxl)
 #install.packages("openxlsx")
 library(openxlsx)
-library(plyr)
 getwd()
 
 ```
@@ -36,13 +32,13 @@ Solar_ATB <- read.csv("2024_ATB.csv")
 #Rename columns
 
 Solar_ATB <- Solar_ATB %>% 
-  rename("Class" = X.9,
-         "Technology" = X.10,
-    "Year_2022" = https...atb.nrel.gov.electricity.2024.utility.scale_pv,
-    "Year_2023" = X.11,
-    "Year_2024" = X.12,
-    "Year_2025" = X.13,
-    "Year_2026" = X.14)
+  rename("Class" = `X.9`,
+         "Technology" = `X.10`,
+    "Year_2022" = `https...atb.nrel.gov.electricity.2024.utility.scale_pv`,
+    "Year_2023" = `X.11`,
+    "Year_2024" = `X.12`,
+    "Year_2025" = `X.13`,
+    "Year_2026" = `X.14`)
 
 #view(Solar_ATB)
 
@@ -97,110 +93,91 @@ Tax_Credit <- Solar_ATB[378:381, 10:17]
 
 #Net Cap Factor
 Net_Cap_Factor <- Net_Cap_Factor %>%
-  mutate(Net_Cap_Factor = rowMeans(select(., Year_2022:Year_2026) %>% 
+  mutate(Avg_Net_Cap = rowMeans(select(., Year_2022:Year_2026) %>% 
                              mutate(across(everything(), as.numeric)),
                             na.rm = TRUE))
-Net_Cap_Factor_processed <- Net_Cap_Factor%>% 
-  select(Class, Technology, Net_Cap_Factor)
 
 
 #Process annual energy production
 Annual_Energy_Production <- Annual_Energy_Production %>%
-  mutate(Annual_Energy_Production =
+  mutate(Avg_Annual_Energy_ =
            rowMeans(select(., Year_2022:Year_2026) %>% 
                              mutate(across(everything(), as.numeric)),
                             na.rm = TRUE))
-Annual_Energy_Production_processed <- Annual_Energy_Production %>% 
-  select(Class, Technology, Annual_Energy_Production)
 
 #Next, process capex
 CAPEX <- CAPEX %>%
-  mutate(CAPEX =
+  mutate(Avg_CAPEX =
            rowMeans(select(., Year_2022:Year_2026) %>% 
                              mutate(across(everything(), as.numeric)),
                             na.rm = TRUE))
-CAPEX_processed <- CAPEX %>% 
-  select(Class, Technology, CAPEX)
 
 #Processing CFC next
 Construct_Finance_Costs <- Construct_Finance_Costs %>%
-  mutate(Construct_Finance_Costs =
+  mutate(Avg_Construct_Finance_Costs =
            rowMeans(select(., Year_2022:Year_2026) %>% 
                              mutate(across(everything(), as.numeric)),
                             na.rm = TRUE))
-Construct_Finance_Costs_processed <- Construct_Finance_Costs %>% 
-  select(Class, Technology, Construct_Finance_Costs)
 
 #Overnight Capacity Costs
 Overnight_Cap_Costs <- Overnight_Cap_Costs %>%
-  mutate(Overnight_Cap_Costs =
+  mutate(Avg_Overnight_Cap_Costs =
            rowMeans(select(., Year_2022:Year_2026) %>% 
                              mutate(across(everything(), as.numeric)),
                             na.rm = TRUE))
-Overnight_Cap_Costs_processed <- Overnight_Cap_Costs %>% 
-  select(Class, Technology, Overnight_Cap_Costs)
 
 #FixedO&M
 Fixed_OM <- Fixed_OM %>%
-  mutate(Fixed_OM =
+  mutate(Avg_Fixed_OM =
            rowMeans(select(., Year_2022:Year_2026) %>% 
                              mutate(across(everything(), as.numeric)),
                             na.rm = TRUE))
-Fixed_OM_processed <- Fixed_OM %>% 
-  select(Class, Technology, Fixed_OM)
 
 #VariableO&M
 Variable_OM <- Variable_OM %>%
-  mutate(Variable_OM =
+  mutate(Avg_Variable_OM =
            rowMeans(select(., Year_2022:Year_2026) %>% 
                              mutate(across(everything(), as.numeric)),
                             na.rm = TRUE))
-Variable_OM_processed <- Variable_OM %>% 
-  select(Class, Technology, Variable_OM)
 
 #GridCC
 Grid_Connect_Cost <- Grid_Connect_Cost %>%
-  mutate(Grid_Connect_Cost =
+  mutate(Avg_Grid_Connect_Cost =
            rowMeans(select(., Year_2022:Year_2026) %>% 
                              mutate(across(everything(), as.numeric)),
                             na.rm = TRUE))
-Grid_Connect_Cost_processed <- Grid_Connect_Cost %>% 
-  select(Class, Technology, Grid_Connect_Cost)
-
 
 #LCOE processing
 LCOE <- LCOE %>%
-  mutate(LCOE = rowMeans(select(., Year_2022:Year_2026) %>% 
+  mutate(Avg_LCOE = rowMeans(select(., Year_2022:Year_2026) %>% 
                              mutate(across(everything(), as.numeric)),
                             na.rm = TRUE))
 
-LCOE_processed <- LCOE %>% 
-  select(Class, Technology, LCOE)
+view(LCOE)
 
-#view(LCOE_processed)
 
 ```
 
 
 ```{r}
-#Combine data frames
-#view(Grid_Connect_Cost_processed)
+#First, create a data frame for net capacity observations
+#view(Grid_Connect_Costs)
 
-dfs <- list(Net_Cap_Factor_processed,
-                             Annual_Energy_Production_processed,
-                             CAPEX_processed,
-                             Construct_Finance_Costs_processed,
-                             Overnight_Cap_Costs_processed,
-                             Fixed_OM_processed,
-                             Variable_OM_processed,
-                             Grid_Connect_Cost_processed,
-                             LCOE_processed)
+dfs1 <- list(Net_Cap_Factor,
+            Annual_Energy_Production,
+            CAPEX,
+            Construct_Finance_Costs,
+            Overnight_Cap_Costs,
+            Fixed_OM,
+            Variable_OM,
+            Grid_Connect_Cost,
+            LCOE)
 
-Solar_ATB_Processed <- join_all(dfs,
-                             by = c("Class", "Technology"),
-                             type = "full")
+Solar_ATB_Net_Cap <- join(Net_Cap_Factor, LCOE, by = "Technology")
 
-Solar_ATB_Processed <- Solar_ATB_Processed %>% 
+view(Solar_ATB_Net_Cap)
+
+Solar_ATB_Net_Cap <- Solar_ATB_Net_Cap %>% 
   mutate(Class = factor(Class, levels = c("Utility_PV___Class_1",
                                           "Utility_PV___Class_2",
                                           "Utility_PV___Class_3",
@@ -216,18 +193,51 @@ Solar_ATB_Processed <- Solar_ATB_Processed %>%
 
 ```
 
+```{r}
+#Next, make a data frame for annual energy production
+
+dfs2 <- list(Annual_Energy_Production,
+            Net_Cap_Factor,
+            CAPEX,
+            Construct_Finance_Costs,
+            Overnight_Cap_Costs,
+            Fixed_OM,
+            Variable_OM,
+            Grid_Connect_Cost,
+            LCOE)
+
+Solar_ATB_Annual_Gen <- join_all(dfs2,
+                             by = c("Class", "Technology", "LCOE"),
+                             type = "full")
+
+Solar_ATB_Annual_Gen <- Solar_ATB_Annual_Gen %>% 
+  mutate(Class = factor(Class, levels = c("Utility_PV___Class_1",
+                                          "Utility_PV___Class_2",
+                                          "Utility_PV___Class_3",
+                                          "Utility_PV___Class_4",
+                                          "Utility_PV___Class_5",
+                                          "Utility_PV___Class_6",
+                                          "Utility_PV___Class_7",
+                                          "Utility_PV___Class_8",
+                                          "Utility_PV___Class_9",
+                                          "Utility_PV___Class_10"),
+                        labels = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)))
+
+view(Solar_ATB_Annual_Gen)
+
+```
+
 
 ```{r}
-#view(Solar_ATB_Processed)
 #Remove the last row, blank/NA
-
-Solar_ATB_Processed <- Solar_ATB_Processed[-31, ]
+Solar_ATB_Net_Cap <- Solar_ATB_Net_Cap[-31, -1]
+Solar_ATB_Annual_Gen <- Solar_ATB_Annual_Gen[-31, -1]
 
 #view(Solar_ATB_Processed)
 getwd()
 
 #Save processed data in new folder
 
-write.csv(Solar_ATB_Processed, "C:/Users/Ashree/OneDrive/Desktop/Spring_2025/Stats_Modeling/ENV_710/Processed_Data/Solar_ATB_Processed.csv")
-```
+write.csv(Solar_ATB_Annual_Gen, "C:/Users/Ashree/OneDrive/Desktop/Spring_2025/Stats_Modeling/ENV_710/Processed_Data/Net_Cap.csv")
 
+write.csv(Solar_ATB_Annual_Gen, "C:/Users/Ashree/OneDrive/Desktop/Spring_2025/Stats_Modeling/ENV_710/Processed_Data/Annual_Gen.csv")

@@ -135,26 +135,93 @@ For initial visualization, we found out that CAPEX, Construction cost, Overnight
 
 ```{r}
 # Graph relationship between capacity factor and LCOE
-ggplot(data = Processed_ATB, aes(y=LCOE, x=Net_Cap_Factor,
+cap_fac_plot <- ggplot(data = Processed_ATB, aes(y=LCOE, x=Net_Cap_Factor,
                                  color=Technology))+
   geom_jitter()+
   labs(x= "Net Capacity Factor (%)",
        y = "LCOE ($/MWh)")+
-  theme_bw() +
+  theme_bw() +  
+  labs(title = "LCOE of Utility-Scale PV based on Net Capacity Factor,
+       U.S. NREL Annual Technology Baseline (2022-2026)",
+       caption =
+"This graph examines the levelized cost of electricity and net capacity factor.
+As net capacity factor increases, the cost of producing each additional unit
+of electricity (the LCOE) decreases. The technology categories are scattered,
+though conservation technology predictions tend to have a higher LCOE.") +
+  theme(plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0)) 
+
+cap_fac_plot 
+
+ggsave(cap_fac_plot ,
+       filename = "Cap_Fac_Plot.jpg",
+       height = 12,
+       width = 15,
+       units = "cm")
 # We can see that capacity factor is negatively related to LCOE. Conservative technology tends to cause higher LCOE.
 ```
 ```{r}
 # Graph relationship between capacity factor and LCOE
-ggplot(data = Processed_ATB, aes(y=LCOE, x=Annual_Energy_Production,
-                                 color = Class))+
+genplot1 <- ggplot(data = Processed_ATB, aes(y=LCOE, x=Annual_Energy_Production,
+                                 color = Class)) +
   geom_jitter()+
   labs(x= "Annual Energy Production (MWh)",
        y = "LCOE ($/MWh)")+ #Please check if it is MWh
-  theme_bw() + 
+  theme_bw() +  
+  labs(title = "LCOE of Utility-Scale PV based on Annual Energy Production,
+       U.S. NREL Annual Technology Baseline (2022-2026)",
+       caption =
+"This graph examines the levelized cost of electricity and annual energy
+production. As production increases, the cost of producing each additional unit
+of electricity (the LCOE) decreases. Of interest, Class 1 observations have the
+highest energy annual production and Class 10 observations have the lowest
+annual energy generation.") +
+  theme(plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0)) 
+
+genplot1
+
+ggsave(genplot1,
+       filename = "Gen_Plot_Class.jpg",
+       height = 12,
+       width = 15,
+       units = "cm")
+
 # Annual Energy production is negatively related to LCOE. It is also interesting 
 # to see that each class is stacked in three, with class 1 having highest production 
 # and lowest LCOE, and class 10 on the opposite end.
 ```
+```{r}
+# Graph relationship between capacity factor and LCOE
+genplot2 <- ggplot(data = Processed_ATB, aes(y=LCOE, x=Annual_Energy_Production,
+                                 color = Technology)) +
+  geom_jitter()+
+  labs(x= "Annual Energy Production (MWh)",
+       y = "LCOE ($/MWh)")+ #Please check if it is MWh
+  theme_bw() +  
+  labs(title = "LCOE of Utility-Scale PV based on Annual Energy Production,
+       U.S. NREL Annual Technology Baseline (2022-2026)",
+       caption =
+"This graph examines the levelized cost of electricity and annual energy
+production. As production increases, the cost of producing each additional unit
+of electricity (the LCOE) decreases.") +
+  theme(plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0)) 
+
+genplot2
+
+ggsave(genplot2,
+       filename = "Gen_Plot_Tech.jpg",
+       height = 12,
+       width = 15,
+       units = "cm")
+
+# Annual Energy production is negatively related to LCOE. It is also interesting 
+# to see that each class is stacked in three, with class 1 having highest production 
+# and lowest LCOE, and class 10 on the opposite end.
+```
+
+
 ```{r}
 # Evaluate correlation between net capacity factor and annual energy production
 # since they are the only two continuous variables.

@@ -37,18 +37,66 @@ Processed_ATB$Class = factor (Processed_ATB$Class,
 2*30^(1/3) #6.21, Bin size = 6
 
 # Graph relationship of technology type to LCOE
-ggplot(data = Processed_ATB, aes(x=Technology,y=LCOE,color=Technology))+
+techplot <- ggplot(data = Processed_ATB, aes(x=Technology,y=LCOE,color=Technology))+
   geom_boxplot()+
-  theme_bw()
+  theme_bw() + 
+  labs(title = "LCOE of Utility-Scale PV based on Technology Advancement,
+       U.S. NREL Annual Technology Baseline (2022-2026)",
+       caption =
+"This graph examines the levelized cost of electricity and technology design level.
+The National Renewable Energies Laboratory creates solar power projections based on
+three categories of future potential technology directions. The advanced technology
+category describes a future with high investment in solar research and development,
+new efficient panels, and improved solar power performance. The moderate technology
+category represents solar power outlook if the United States continued at the current
+pace of panel design and development. The conservative categories indicates a future
+in which solar panel research and development has slowed down, or efficiency remains
+stagnant. As shown in the graph, the cost of producing one kWh of solar electricity
+is lowest with the advanced technology future. The cost increases in the moderate
+and conservation technology projections.") +
+  theme(plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0)) 
+
+techplot
+
+ggsave(techplot,
+       filename = "Tech_Plot.jpg",
+       height = 15,
+       width = 15,
+       units = "cm")
+
 # We can see Advanced technology has lowest LCOE, and conservative ones have higher LCOE
+
 ```
 ```{r}
 # Graph relationship of Class type to LCOE
-ggplot(data = Processed_ATB, aes(y=LCOE, x= Class,color=Class))+
+classplot <- ggplot(data = Processed_ATB, aes(y=LCOE, x= Class,color=Class))+
   geom_boxplot()+
   #facet_wrap(~Class)+
-  theme_bw()
+  theme_bw() + 
+  labs(title = "LCOE of Utility-Scale PV based on Geographic Class,
+       U.S. NREL Annual Technology Baseline (2022-2026)",
+       caption =
+"This graph examines the levelized cost of electricity and geographic class level.
+The NREL has divided the U.S. into ten geographic categories based on the average
+sunlight power per area (irridance) different regions receive. Class 1 receives 
+the highest amount of solar power per area on average annually, while Class 10 counties
+receive the lowest leve of solar power per area on average annually. As shown in
+the graph, the cost of producing electricity increases as the class increases.") +
+  theme(plot.caption.position = "plot",
+        plot.caption = element_text(hjust = 0)) 
+
+classplot
+
+ggsave(classplot,
+       filename = "Class_Plot.jpg",
+       height = 12,
+       width = 15,
+       units = "cm")
+
+
 ```
+
 ```{r}
 # Evaluate whether independent variables are normally distributed
 ggplot(data = Processed_ATB, aes(Net_Cap_Factor))+
@@ -92,7 +140,7 @@ ggplot(data = Processed_ATB, aes(y=LCOE, x=Net_Cap_Factor,
   geom_jitter()+
   labs(x= "Net Capacity Factor (%)",
        y = "LCOE ($/MWh)")+
-  theme_bw()
+  theme_bw() +
 # We can see that capacity factor is negatively related to LCOE. Conservative technology tends to cause higher LCOE.
 ```
 ```{r}
@@ -102,7 +150,7 @@ ggplot(data = Processed_ATB, aes(y=LCOE, x=Annual_Energy_Production,
   geom_jitter()+
   labs(x= "Annual Energy Production (MWh)",
        y = "LCOE ($/MWh)")+ #Please check if it is MWh
-  theme_bw()
+  theme_bw() + 
 # Annual Energy production is negatively related to LCOE. It is also interesting 
 # to see that each class is stacked in three, with class 1 having highest production 
 # and lowest LCOE, and class 10 on the opposite end.

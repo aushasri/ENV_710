@@ -266,7 +266,7 @@ energy production or net capacity factor in a linear model when predicting LCOE.
   
   ggsave(class_cor_graph,
        filename = "class_cor_graph.jpg",
-       height = 12,
+       height = 15,
        width = 15,
        units = "cm")
   

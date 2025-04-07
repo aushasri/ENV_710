@@ -85,5 +85,5 @@ summary(Model3.2.lm)
 plot(Model3.2.lm)
 AIC(Model3.2.lm)
 ```
-
+As we can conclude Model 3 may be the best prediction for LCOE with highest adjusted R-squared value and lowest AIC value, although all three models have great predictions with significant p value (P<0.0001).
 

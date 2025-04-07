@@ -16,10 +16,9 @@ library(openxlsx)
 #Load in data
 Solar_ATB <- read.csv("Processed_Data/Solar_ATB_Processed.csv")
 
-#view(Solar_ATB)
+view(Solar_ATB)
 Solar_ATB <- Solar_ATB %>%
-  select(-"X") %>% 
-  select(-"...1")
+  select(-"X")
 
 #view(Solar_ATB)
 
@@ -87,8 +86,13 @@ net2.lm <- lm(LCOE ~
                 Net_Cap_Factor_log + Technology,
              data = Solar_ATB_log)
 
+class.lm <- lm(LCOE ~
+                Class + Technology,
+             data = Solar_ATB_log)
+
 plot(net1.lm)
 plot(net2.lm)
+plot(class.lm)
 
 ```
 

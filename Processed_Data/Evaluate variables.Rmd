@@ -255,7 +255,3 @@ ggplot(data = Processed_ATB, aes(x=Class,y=Annual_Energy_Production))+
   theme_bw()
 ```
 
-```{r}
-tu
-```
-

@@ -16,7 +16,7 @@ getwd()
 
 
 ```{r}
-Processed_ATB <- read_csv("Solar_ATB_Processed.csv")
+Processed_ATB <- read_csv("Solar_ATB_Long.csv")
 
 view(Processed_ATB)
 
@@ -26,7 +26,6 @@ view(Processed_ATB)
 ```{r}
 # Delete the first two columns 
 Processed_ATB <- Processed_ATB[,-1]
-view(Processed_ATB)
 
 # Factorize technology
 Processed_ATB$Technology = factor (Processed_ATB$Technology, 
@@ -40,7 +39,7 @@ Processed_ATB$Class = factor (Processed_ATB$Class,
 ```{r}
 # Visualization
 # Use Rice Rule(2n^(1/3)) to determine bin size
-2*30^(1/3) #6.21, Bin size = 6
+2*150^(1/3) #10.62, Bin size = 11
 
 # Graph relationship of technology type to LCOE
 techplot <- ggplot(data = Processed_ATB, aes(x=Technology,y=LCOE,color=Technology))+
@@ -105,43 +104,40 @@ ggsave(classplot,
 
 ```{r}
 # Evaluate whether independent variables are normally distributed
-ggplot(data = Processed_ATB, aes(Net_Cap_Factor))+
-  geom_histogram(bins=6)+
+ggplot(data = Processed_ATB, aes(Net_Capacity_Factor))+
+  geom_histogram(bins=11)+
   theme_bw()
 
-ggplot(data = Processed_ATB, aes(Annual_Energy_Production))+
-  geom_histogram(bins=6)+
+ggplot(data = Processed_ATB, aes(Annual_Generation_MWh))+
+  geom_histogram(bins=11)+
   theme_bw()
 
 ggplot(data = Processed_ATB, aes(CAPEX))+
-  geom_histogram(bins=6)+
+  geom_histogram(bins=11)+
   theme_bw()
 
-ggplot(data = Processed_ATB, aes(Construct_Finance_Costs))+
-  geom_histogram(bins=6)+
+ggplot(data = Processed_ATB, aes(Construction_Finance_Costs))+
+  geom_histogram(bins=11)+
   theme_bw()
 
-ggplot(data = Processed_ATB, aes(Overnight_Cap_Costs))+
-  geom_histogram(bins=6)+
+ggplot(data = Processed_ATB, aes(Overnight_Capital_Costs))+
+  geom_histogram(bins=11)+
   theme_bw()
 
-ggplot(data = Processed_ATB, aes(Fixed_OM))+
-  geom_histogram(bins=6)+
+ggplot(data = Processed_ATB, aes(Fixed_OM_Costs))+
+  geom_histogram(bins=11)+
   theme_bw()
 
-ggplot(data = Processed_ATB, aes(Grid_Connect_Cost))+
-  geom_histogram(bins=6)+
+ggplot(data = Processed_ATB, aes(Grid_Connection_Costs))+
+  geom_histogram(bins=11)+
   theme_bw()
 
-ggplot(data = Processed_ATB, aes(Variable_OM))+
-  geom_histogram(bins=6)+
-  theme_bw()
 ```
-For initial visualization, we found out that CAPEX, Construction cost, Overnight capital cost, Fixed operation cost, and Grid connection cost only shows three values which fully depends on their technology type. Additionally, variable cost of solar panels is zero. Therefore, we decide not to proceed with all variables mentioned above, and only evaluate technology, class, capacity factor and generations influence on LCOE.
+For initial visualization, we found out that CAPEX, Construction cost, Overnight capital cost, Fixed operation cost, and Grid connection cost is not normally distributed. Additionally, variable cost of solar panels is zero. Therefore, we decide not to proceed with all variables mentioned above, and only evaluate technology, class, capacity factor and generations influence on LCOE.
 
 ```{r}
 # Graph relationship between capacity factor and LCOE
-cap_fac_plot <- ggplot(data = Processed_ATB, aes(y=LCOE, x=Net_Cap_Factor,
+cap_fac_plot <- ggplot(data = Processed_ATB, aes(y=LCOE, x=Net_Capacity_Factor,
                                  color=Technology))+
   geom_jitter()+
   labs(x= "Net Capacity Factor (%)",
@@ -168,7 +164,7 @@ ggsave(cap_fac_plot ,
 ```
 ```{r}
 # Graph relationship between capacity factor and LCOE
-genplot1 <- ggplot(data = Processed_ATB, aes(y=LCOE, x=Annual_Energy_Production,
+genplot1 <- ggplot(data = Processed_ATB, aes(y=LCOE, x=Annual_Generation_MWh,
                                  color = Class)) +
   geom_jitter()+
   labs(x= "Annual Energy Production (MWh)",
@@ -199,7 +195,7 @@ ggsave(genplot1,
 ```
 ```{r}
 # Graph relationship between capacity factor and LCOE
-genplot2 <- ggplot(data = Processed_ATB, aes(y=LCOE, x=Annual_Energy_Production,
+genplot2 <- ggplot(data = Processed_ATB, aes(y=LCOE, x=Annual_Generation_MWh,
                                  color = Technology)) +
   geom_jitter()+
   labs(x= "Annual Energy Production (MWh)",
@@ -231,7 +227,7 @@ ggsave(genplot2,
 ```{r}
 # Evaluate correlation between net capacity factor and annual energy production
 # since they are the only two continuous variables.
-cor.test(x=Processed_ATB$Net_Cap_Factor, y=Processed_ATB$Annual_Energy_Production)
+cor.test(x=Processed_ATB$Net_Capacity_Factor, y=Processed_ATB$Annual_Generation_MWh)
 # The results showed that capacity factor is correlated to annual energy production,
 # therefore we need to place them in different models.
 ```
@@ -240,8 +236,8 @@ cor.test(x=Processed_ATB$Net_Cap_Factor, y=Processed_ATB$Annual_Energy_Productio
 
 #view(Processed_ATB)
 class_cor_graph <- ggplot(data = Processed_ATB,
-                          aes(y=Annual_Energy_Production,
-                                                    x=Net_Cap_Factor, color = Class)) + geom_jitter() +
+                          aes(y=Annual_Generation_MWh,
+                             x=Net_Capacity_Factor, color = Class)) + geom_jitter() +
   theme_bw() +   
   labs(title = "Examining Correlation of Annual Energy Production
        and Net Capacity Factor",
@@ -274,19 +270,19 @@ annual energy production or net capacity factor in a linear model when predictin
 ```
 ```{r}
 # Correlation check between categorical variables and continuous variable
-ggplot(data = Processed_ATB, aes(x=Technology,y=Net_Cap_Factor))+
+ggplot(data = Processed_ATB, aes(x=Technology,y=Net_Capacity_Factor))+
   geom_boxplot()+
   theme_bw()
 
-ggplot(data = Processed_ATB, aes(x=Technology,y=Annual_Energy_Production))+
+ggplot(data = Processed_ATB, aes(x=Technology,y=Annual_Generation_MWh))+
   geom_boxplot()+
   theme_bw()
 
-ggplot(data = Processed_ATB, aes(x=Class,y=Net_Cap_Factor))+
+ggplot(data = Processed_ATB, aes(x=Class,y=Net_Capacity_Factor))+
   geom_boxplot()+
   theme_bw()
 
-ggplot(data = Processed_ATB, aes(x=Class,y=Annual_Energy_Production))+
+ggplot(data = Processed_ATB, aes(x=Class,y=Annual_Generation_MWh))+
   geom_boxplot()+
   theme_bw()
 ```

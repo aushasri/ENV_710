@@ -252,6 +252,19 @@ LCOE_sum <- LCOE %>%
   )
 
 
+LCOE_sum2 <- LCOE %>%
+  select(Class, Technology, Year_2022, Year_2023, Year_2024, Year_2025, Year_2026) %>%
+  mutate(across(starts_with("Year"), as.numeric)) %>%
+  summarise(
+    Min = min(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    Median = median(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    Max = max(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    Mean = mean(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    `Standard Deviation` = sd(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    Variance = var(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    .groups = "drop"
+  )
+
 # Use gt to format the table and add a title
 LCOE_sum <- LCOE_sum %>% 
   gt() %>%
@@ -262,9 +275,23 @@ LCOE_sum <- LCOE_sum %>%
 
 gtsave(LCOE_sum, "LCOE_summary_table.html",
        path = here())
+
+
+LCOE_sum2 <- LCOE_sum2 %>% 
+  gt() %>%
+  tab_header(
+    title = "U.S. Utility-Scale PV LCOE ($/MWh) by Class and Technology, 2022 - 2026",
+    subtitle = "Number of Observations: Each year has 30 observations and 5 years are sampled (150 observations total in this table). The linear models were built based on the average values for categorical variables."
+  )
+
+gtsave(LCOE_sum2, "LCOE_summary_table2.html",
+       path = here())
 ```
 
 ```{r}
+
+here()
+
 #Now net capacity
 Net_Cap_Factor <- Net_Cap_Factor[-31, ]
 
@@ -295,6 +322,36 @@ Net_Cap_Factor_sum <- Net_Cap_Factor_sum %>%
 gtsave(Net_Cap_Factor_sum, "Net_Cap_Factor_summary_table.html",
        path = here())
 ```
+```{r}
+Net_Cap_Factor_sum2 <- Net_Cap_Factor %>%
+  select(Class, Technology, Year_2022, Year_2023, Year_2024, Year_2025, Year_2026) %>%
+  mutate(across(starts_with("Year"), as.numeric)) %>%
+  summarise(
+    Min = min(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    Median = median(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    Max = max(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    Mean = mean(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    `Standard Deviation` = sd(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    Variance = var(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    .groups = "drop"
+  )
+
+
+# Use gt to format the table and add a title
+Net_Cap_Factor_sum2 <- Net_Cap_Factor_sum2 %>% 
+  gt() %>%
+  tab_header(
+    title = "U.S. Utility-Scale PV Net Capacity Factor (%) by Class and Technology, 2022 - 2026",
+    subtitle = "Number of Observations: Each year has 30 observations and 5 years are sampled (150 observations total in this table). The linear models were built based on the average values for categorical variables."
+  )
+
+#Save summary stats
+gtsave(Net_Cap_Factor_sum2, "Net_Cap_Factor_summary_table2.html",
+       path = here())
+```
+
+
+
 
 
 ```{r}
@@ -327,11 +384,73 @@ Annual_Energy_Production_sum <- Annual_Energy_Production_sum %>%
 #Save summary stats
 gtsave(Annual_Energy_Production_sum, "Annual_Energy_summary_table.html",
        path = here())
+
+
+
+
+
 ```
 
 
+```{r}
+#Next annual generation
 
-# Create Averages Table
+Annual_Energy_Production_sum2 <- Annual_Energy_Production %>%
+  select(Class, Technology, Year_2022, Year_2023, Year_2024, Year_2025, Year_2026) %>%
+  mutate(across(starts_with("Year"), as.numeric)) %>%
+  summarise(
+    Min = min(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    Median = median(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    Max = max(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    Mean = mean(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    `Standard Deviation` = sd(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    Variance = var(c(Year_2022, Year_2023, Year_2024, Year_2025, Year_2026), na.rm = TRUE),
+    .groups = "drop"
+  )
+
+
+# Use gt to format the table and add a title
+Annual_Energy_Production_sum2 <- Annual_Energy_Production_sum2 %>% 
+  gt() %>%
+  tab_header(
+    title = "U.S. Utility-Scale PV Annual Electricity Generation (MWh) by Class and Technology, 2022 - 2026",
+    subtitle = "Number of Observations: Each year has 30 observations and 5 years are sampled (150 observations total in this table). The linear models were built based on the average values for categorical variables."
+  )
+
+#Save summary stats
+gtsave(Annual_Energy_Production_sum2, "Annual_Energy_summary_table2.html",
+       path = here())
+```
+
+
+```{r}
+#Save as images
+
+library(webshot)
+
+webshot::install_phantomjs()
+
+webshot("LCOE_summary_table.html", "LCOE_summary_table.png")
+webshot("Net_Cap_Factor_summary_table.html", "Net_Cap_Factor_summary_table.png")
+webshot("Annual_Energy_summary_table.html", "Annual_Energy_summary_table.png")
+
+webshot("LCOE_summary_table2.html", 
+        "LCOE_summary_table2.png", 
+        vwidth = 500,   # Set the width in pixels
+        vheight = 250)
+
+webshot("Net_Cap_Factor_summary_table2.html", 
+        "NetCap2.png", 
+        vwidth = 500,   # Set the width in pixels
+        vheight = 250)
+
+webshot("Annual_Energy_summary_table2.html", 
+        "Annual_Energy_summary_table2.png", 
+        vwidth = 500,   # Set the width in pixels
+        vheight = 250)
+
+```
+
 
 ```{r}
 #Combine data frames
@@ -366,6 +485,7 @@ Solar_ATB_Processed <- Solar_ATB_Processed %>%
 
 
 ```
+
 
 
 ```{r}

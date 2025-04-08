@@ -290,4 +290,3 @@ ggplot(data = Processed_ATB, aes(x=Class,y=Annual_Energy_Production))+
   geom_boxplot()+
   theme_bw()
 ```
-

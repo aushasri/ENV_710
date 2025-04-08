@@ -11,12 +11,14 @@ output: pdf_document
 #Set up
 
 library(tidyverse)
+#install.packages("dplyr")
+#library(plyr)
 library(dplyr)
 library(here)
 library(readxl)
 #install.packages("openxlsx")
 library(openxlsx)
-library(plyr)
+
 getwd()
 
 ```
@@ -36,13 +38,13 @@ Solar_ATB <- read.csv("2024_ATB.csv")
 #Rename columns
 
 Solar_ATB <- Solar_ATB %>% 
-  rename("Class" = X.9,
-         "Technology" = X.10,
-    "Year_2022" = https...atb.nrel.gov.electricity.2024.utility.scale_pv,
-    "Year_2023" = X.11,
-    "Year_2024" = X.12,
-    "Year_2025" = X.13,
-    "Year_2026" = X.14)
+  rename(Class = `X.9`,
+         Technology = `X.10`,
+    Year_2022 = `https...atb.nrel.gov.electricity.2024.utility.scale_pv`,
+    Year_2023 = `X.11`,
+    Year_2024 = `X.12`,
+    Year_2025 = `X.13`,
+    Year_2026 = `X.14`)
 
 #view(Solar_ATB)
 

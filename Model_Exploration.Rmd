@@ -14,7 +14,7 @@ library(readxl)
 library(openxlsx)
 
 #Load in data
-Solar_ATB <- read.csv("Processed_Data/Solar_ATB_Processed.csv")
+Solar_ATB <- read.csv("Processed_Data/Solar_ATB_Long.csv")
 
 view(Solar_ATB)
 Solar_ATB <- Solar_ATB %>%

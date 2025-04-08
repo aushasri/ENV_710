@@ -95,14 +95,140 @@ Tax_Credit <- Solar_ATB[378:381, 10:17]
 ```
 
 
+# Create Pivot Tables
+
+```{r}
+Net_cap_long <- Net_Cap_Factor %>% 
+  pivot_longer(cols = Year_2022:Year_2026,
+               names_to = "Year",
+               values_to = "Net Capacity Factor (%)")
+
+#view(Net_cap_long)
+
+Annual_Energy_Long <- Annual_Energy_Production %>% 
+  pivot_longer(cols = Year_2022:Year_2026,
+               names_to = "Year",
+               values_to = "Annual Generation (MWh)")
+
+CAPEX_Long <- CAPEX %>% 
+  pivot_longer(cols = Year_2022:Year_2026,
+               names_to = "Year",
+               values_to = "CAPEX ($/kW)")
+
+CFC_Long <- Construct_Finance_Costs %>% 
+  pivot_longer(cols = Year_2022:Year_2026,
+               names_to = "Year",
+               values_to = "Construction Finance Costs ($/kW)")
+
+Overnight_Long <- Overnight_Cap_Costs %>% 
+  pivot_longer(cols = Year_2022:Year_2026,
+               names_to = "Year",
+               values_to = "Overnight Capital Costs ($/kW)")
+
+Fixed_OM_Long <- Fixed_OM %>% 
+  pivot_longer(cols = Year_2022:Year_2026,
+               names_to = "Year",
+               values_to = "Fixed Operations and Maintenance ($/kW-yr)")
+
+#Variable O&M is zero for solar power
+#no need to include in final data frame
+
+Grid_Connect_Costs_Long <- Grid_Connect_Cost %>% 
+  pivot_longer(cols = Year_2022:Year_2026,
+               names_to = "Year",
+               values_to = "Grid Connection Costs ($/kW)")
+
+LCOE_Long <- LCOE %>% 
+  pivot_longer(cols = Year_2022:Year_2026,
+               names_to = "Year",
+               values_to = "LCOE ($/MWh)")
+
+
+```
+
+```{r}
+#Combine data frames
+
+view(Net_cap_long)
+  
+
+df_pivot <- list(Net_cap_long,
+                             Annual_Energy_Long,
+                             CAPEX_Long,
+                             CFC_Long,
+                             Overnight_Long,
+                             Fixed_OM_Long,
+                             Grid_Connect_Costs_Long,
+                             LCOE_Long)
+
+Solar_ATB_Long <- Net_cap_long %>%
+  left_join(Annual_Energy_Long, by = c("Class", "Technology", "Year")) %>%
+  left_join(CAPEX_Long, by = c("Class", "Technology", "Year")) %>%
+  left_join(CFC_Long, by = c("Class", "Technology", "Year")) %>%
+  left_join(Overnight_Long, by = c("Class", "Technology", "Year")) %>%
+  left_join(Fixed_OM_Long, by = c("Class", "Technology", "Year")) %>%
+  left_join(Grid_Connect_Costs_Long, by = c("Class", "Technology", "Year")) %>%
+  left_join(LCOE_Long, by = c("Class", "Technology", "Year"))
+
+#view(Solar_ATB_Long)
+#Also clean up class name and year name
+
+Solar_ATB_Long <- Solar_ATB_Long %>% 
+  mutate(Class = factor(Class, levels = c("Utility_PV___Class_1",
+                                          "Utility_PV___Class_2",
+                                          "Utility_PV___Class_3",
+                                          "Utility_PV___Class_4",
+                                          "Utility_PV___Class_5",
+                                          "Utility_PV___Class_6",
+                                          "Utility_PV___Class_7",
+                                          "Utility_PV___Class_8",
+                                          "Utility_PV___Class_9",
+                                          "Utility_PV___Class_10"),
+                        labels = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)))
+
+#view(Solar_ATB_Long)
+#Need to get rid of blank columns
+
+Solar_ATB_Long <- Solar_ATB_Long %>%
+  select(-"X.8.x") %>% 
+  select(-"X.8.y") %>% 
+  select(-"X.8.x.x") %>% 
+  select(-"X.8.y.y") %>% 
+  select(-"X.8.x.x.x") %>% 
+  select(-"X.8.y.y.y") %>% 
+  select(-"X.8.x.x.x.x") %>% 
+  select(-"X.8.y.y.y.y")
+
+#view(Solar_ATB_Long)
+
+#Clean up year names
+Solar_ATB_Long$Year <- gsub("Year_", "", Solar_ATB_Long$Year)
+#Delete blank rows
+Solar_ATB_Long <- Solar_ATB_Long[-c(151, 152, 153, 154, 155), ]
+
+view(Solar_ATB_Long)
+
+
+#Save data frame
+write.csv(Solar_ATB_Long, "C:/Users/Ashree/OneDrive/Desktop/Spring_2025/Stats_Modeling/ENV_710/Processed_Data/Solar_ATB_Long.csv")
+
+```
+
+
+# Averages
+These averages will be used in the initial data visualization
+
 ```{r}
 #Create an average value for the five years
 
-#Net Cap Factor
+view(Net_Cap_Factor)
+
 Net_Cap_Factor <- Net_Cap_Factor %>%
   mutate(Net_Cap_Factor = rowMeans(select(., Year_2022:Year_2026) %>% 
                              mutate(across(everything(), as.numeric)),
                             na.rm = TRUE))
+
+
 Net_Cap_Factor_processed <- Net_Cap_Factor%>% 
   select(Class, Technology, Net_Cap_Factor)
 

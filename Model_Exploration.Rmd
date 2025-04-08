@@ -96,4 +96,23 @@ plot(class.lm)
 
 ```
 
+```{r}
+
+library(lme4)
+library(nlme)
+
+Solar_ATB
+
+multi_model1 <- lme(LCOE ~ Annual_Energy_Production + Technology,
+                   random = ~1 | Class, data = Solar_ATB)
+
+summary(multi_model1)
+
+multi_model2 <- lme(LCOE ~ Net_Cap_Factor +
+                      Annual_Energy_Production + Technology,
+                   random = ~1 | Class, data = Solar_ATB)
+
+summary(multi_model2)
+
+```
 

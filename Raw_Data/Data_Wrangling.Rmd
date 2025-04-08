@@ -341,7 +341,7 @@ Net_Cap_Factor_sum2 <- Net_Cap_Factor %>%
 Net_Cap_Factor_sum2 <- Net_Cap_Factor_sum2 %>% 
   gt() %>%
   tab_header(
-    title = "U.S. Utility-Scale PV Net Capacity Factor (%) by Class and Technology, 2022 - 2026",
+    title = "U.S. Utility-Scale PV Net Capacity Factor (%), 2022 - 2026",
     subtitle = "Number of Observations: Each year has 30 observations and 5 years are sampled (150 observations total in this table). The linear models were built based on the average values for categorical variables."
   )
 
@@ -413,7 +413,7 @@ Annual_Energy_Production_sum2 <- Annual_Energy_Production %>%
 Annual_Energy_Production_sum2 <- Annual_Energy_Production_sum2 %>% 
   gt() %>%
   tab_header(
-    title = "U.S. Utility-Scale PV Annual Electricity Generation (MWh) by Class and Technology, 2022 - 2026",
+    title = "U.S. Utility-Scale PV Annual Electricity Generation (MWh), 2022 - 2026",
     subtitle = "Number of Observations: Each year has 30 observations and 5 years are sampled (150 observations total in this table). The linear models were built based on the average values for categorical variables."
   )
 

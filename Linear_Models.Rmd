@@ -25,6 +25,11 @@ Solar_ATB <- read.csv("Processed_Data/Solar_ATB_Long.csv")
 ```
 
 ```{r}
+mean(Solar_ATB$LCOE)
+sd(Solar_ATB$LCOE)
+```
+
+```{r}
 Solar_ATB <- Solar_ATB %>%
   select(-"X")
 
@@ -38,7 +43,6 @@ plot(Model1.lm)
 AIC(Model1.lm)
 
 view(Solar_ATB)
-
 ```
 
 
@@ -66,7 +70,7 @@ AIC(Model2.lm)
 ```
 
 ```{r}
-# Remove data point 1,29,30
+# Remove data point 137,142,147
 Solar_ATB_Model2.2 <- Solar_ATB[-c(137,142,147),]
 Model2.2.lm <- lm(LCOE ~
                 Technology +

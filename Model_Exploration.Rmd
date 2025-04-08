@@ -1,6 +1,6 @@
 ---
 title: "Linear Models"
-author: "Asreeta Ushasri"
+author: "Asreeta Ushasri and Judy Hua Zhu"
 date: "04-05-2025"
 output: html_document
 ---

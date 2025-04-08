@@ -1,6 +1,6 @@
 ---
 title: "Linear_Model"
-author: "Judy Hua Zhu"
+author: "Judy Hua Zhu and Asreeta Ushasri"
 date: "2025-04-06"
 output: html_document
 ---
@@ -31,7 +31,12 @@ Model1.lm <- lm(LCOE ~
                 data = Solar_ATB)
 summary(Model1.lm)
 plot(Model1.lm)
+
+view(Solar_ATB)
+
 ```
+
+
 ```{r}
 # Remove data point 28,29,30
 Solar_ATB_Model1.2 <- Solar_ATB[-c(28,29,30),]
@@ -42,6 +47,17 @@ Model1.2.lm <- lm(LCOE ~
 summary(Model1.2.lm)
 plot(Model1.2.lm)
 AIC(Model1.2.lm)
+
+
+# Remove data point 28,29,30
+Solar_ATB_Model1.3 <- Solar_ATB[-c(28,29,30),]
+Model1.3.lm <- lm(LCOE ~
+                Technology +
+                Class,
+             data = Solar_ATB_Model1.2)
+summary(Model1.3.lm)
+plot(Model1.3.lm)
+AIC(Model1.3.lm)
 ```
 
 

@@ -26,6 +26,8 @@ Solar_ATB <- read.csv("Processed_Data/Solar_ATB_Long.csv")
 
 ```{r}
 view(Solar_ATB)
+Solar_ATB <- Solar_ATB %>%
+  select(-"X")
 
 Model1.lm <- lm(LCOE ~
                 Technology +
@@ -33,6 +35,8 @@ Model1.lm <- lm(LCOE ~
                 data = Solar_ATB)
 summary(Model1.lm)
 plot(Model1.lm)
+
+AIC(Model1.lm)
 
 view(Solar_ATB)
 
@@ -66,7 +70,7 @@ AIC(Model1.3.lm)
 ```{r message=FALSE, warning=FALSE}
 Model2.lm <- lm(LCOE ~
                 Technology +
-                Net_Cap_Factor,
+                Net_Capacity_Factor,
              data = Solar_ATB)
 summary(Model2.lm)
 plot(Model2.lm)
@@ -87,7 +91,7 @@ AIC(Model2.2.lm)
 # Model variable: Technology and generation
 Model3.lm <- lm(LCOE ~
                 Technology +
-                log(Annual_Energy_Production),
+                log(Annual_Generation_MWh),
              data = Solar_ATB)
 summary(Model3.lm)
 plot(Model3.lm)

@@ -20,16 +20,30 @@ view(Solar_ATB)
 Solar_ATB <- Solar_ATB %>%
   select(-"X")
 
-#view(Solar_ATB)
+view(Solar_ATB)
 
 ```
 
 
+```{r}
+library(lme4)
+library(nlme)
+
+Solar_ATB
+
+multi_model1 <- lme(LCOE ~ Annual_Generation_MWh + Technology,
+                   random = ~1 | Class, data = Solar_ATB)
+
+summary(multi_model1)
+plot(multi_model1)
+
+AIC(multi_model1)
+```
 
 ```{r}
 gen1.lm <- lm(LCOE ~
                 Class + Technology +
-                Annual_Energy_Production,
+                Annual_Generation_MWh,
              data = Solar_ATB)
 ```
 
@@ -98,13 +112,7 @@ plot(class.lm)
 
 ```{r}
 
-library(lme4)
-library(nlme)
 
-Solar_ATB
-
-multi_model1 <- lme(LCOE ~ Annual_Energy_Production + Technology,
-                   random = ~1 | Class, data = Solar_ATB)
 
 summary(multi_model1)
 

@@ -1,4 +1,4 @@
-"","Class","Technology","Year","Net Capacity Factor (%)","Annual Generation (MWh)","CAPEX ($/kW)","Construction Finance Costs ($/kW)","Overnight Capital Costs ($/kW)","Fixed Operations and Maintenance ($/kW-yr)","Grid Connection Costs ($/kW)","LCOE ($/MWh)"
+"","Class","Technology","Year","Net_Capacity_Factor)","Annual_Generation_MWh","CAPEX","Construction_Finance_Costs","Overnight_Capital_Costs","Fixed_OM_Costs","Grid_Connection_Costs","LCOE"
 "1","1","Advanced","2022","32"," 2771 ","1483","51","1367 ","24 ","65","39"
 "2","1","Advanced","2023","32"," 2798 ","1611","56","1435 ","22 ","120","41"
 "3","1","Advanced","2024","32"," 2825 ","1534","53","1366 ","21 ","115","38"

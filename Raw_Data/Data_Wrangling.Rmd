@@ -101,34 +101,34 @@ Tax_Credit <- Solar_ATB[378:381, 10:17]
 Net_cap_long <- Net_Cap_Factor %>% 
   pivot_longer(cols = Year_2022:Year_2026,
                names_to = "Year",
-               values_to = "Net Capacity Factor (%)")
+               values_to = "Net_Capacity_Factor)")
 
 #view(Net_cap_long)
 
 Annual_Energy_Long <- Annual_Energy_Production %>% 
   pivot_longer(cols = Year_2022:Year_2026,
                names_to = "Year",
-               values_to = "Annual Generation (MWh)")
+               values_to = "Annual_Generation_MWh")
 
 CAPEX_Long <- CAPEX %>% 
   pivot_longer(cols = Year_2022:Year_2026,
                names_to = "Year",
-               values_to = "CAPEX ($/kW)")
+               values_to = "CAPEX")
 
 CFC_Long <- Construct_Finance_Costs %>% 
   pivot_longer(cols = Year_2022:Year_2026,
                names_to = "Year",
-               values_to = "Construction Finance Costs ($/kW)")
+               values_to = "Construction_Finance_Costs")
 
 Overnight_Long <- Overnight_Cap_Costs %>% 
   pivot_longer(cols = Year_2022:Year_2026,
                names_to = "Year",
-               values_to = "Overnight Capital Costs ($/kW)")
+               values_to = "Overnight_Capital_Costs")
 
 Fixed_OM_Long <- Fixed_OM %>% 
   pivot_longer(cols = Year_2022:Year_2026,
                names_to = "Year",
-               values_to = "Fixed Operations and Maintenance ($/kW-yr)")
+               values_to = "Fixed_OM_Costs")
 
 #Variable O&M is zero for solar power
 #no need to include in final data frame
@@ -136,12 +136,12 @@ Fixed_OM_Long <- Fixed_OM %>%
 Grid_Connect_Costs_Long <- Grid_Connect_Cost %>% 
   pivot_longer(cols = Year_2022:Year_2026,
                names_to = "Year",
-               values_to = "Grid Connection Costs ($/kW)")
+               values_to = "Grid_Connection_Costs")
 
 LCOE_Long <- LCOE %>% 
   pivot_longer(cols = Year_2022:Year_2026,
                names_to = "Year",
-               values_to = "LCOE ($/MWh)")
+               values_to = "LCOE")
 
 
 ```

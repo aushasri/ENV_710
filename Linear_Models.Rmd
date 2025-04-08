@@ -25,6 +25,8 @@ Solar_ATB <- read.csv("Processed_Data/Solar_ATB_Long.csv")
 ```
 
 ```{r}
+view(Solar_ATB)
+
 Model1.lm <- lm(LCOE ~
                 Technology +
                 Class,

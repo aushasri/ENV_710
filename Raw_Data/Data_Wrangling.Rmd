@@ -101,7 +101,7 @@ Tax_Credit <- Solar_ATB[378:381, 10:17]
 Net_cap_long <- Net_Cap_Factor %>% 
   pivot_longer(cols = Year_2022:Year_2026,
                names_to = "Year",
-               values_to = "Net_Capacity_Factor)")
+               values_to = "Net_Capacity_Factor")
 
 #view(Net_cap_long)
 

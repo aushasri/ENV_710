@@ -12,6 +12,7 @@ library(here)
 library(dplyr)
 library(readxl)
 library(openxlsx)
+library(cowplot)
 
 #Load in data
 Solar_ATB <- read.csv("Processed_Data/Solar_ATB_Long.csv")
@@ -29,16 +30,74 @@ view(Solar_ATB)
 library(lme4)
 library(nlme)
 
+
 Solar_ATB
 
 multi_model1 <- lme(LCOE ~ Annual_Generation_MWh + Technology,
                    random = ~1 | Class, data = Solar_ATB)
 
 summary(multi_model1)
-plot(multi_model1)
+
+
+
+residuals <- plot(multi_model1)
+
+normality <- qqnorm(multi_model1)
+
+assumptions <- plot_grid(
+  residuals,
+                         normality,
+                         ncols = 2,
+                         rel_heights = c(2, 2))
+
+draw_label("",
+                                               size = 10, color = "black")
+print(assumptions)
+
+assumptions <- ggdraw(plot = assumptions) +
+  labs(title = "Assessing LCOE Multilevel Model Fit",
+       caption =
+       "The Fitted Values graph depicts equal variance
+       amongst residuals in the multilevel model.
+       The model meets requirements for homoscedasticity.
+       The QQ Plot indicates the residuals follow the
+       theoretical normal curve quite closely (except for
+       a slight curve at the far right values). This model
+       therefore meets the assumption for normally
+       distributed residuals."
+)
+
+assumptions <- ggdraw() +
+  draw_text("Assessing LCOE Multilevel Model Fit", 
+            size = 16, fontface = "bold", x = 0.5, y = 0.97, hjust = 0.5) +
+  draw_plot(assumptions, y = 0.1, height = 0.8) +
+  draw_text("The Fitted Values graph depicts equal variance amongst residuals
+            in the multilevel model. The model meets requirements for homoscedasticity.
+            The QQ Plot indicates the residuals follow the theoretical normal
+            curve quite closely (except for a slight curve at the far right values).
+            This model therefore meets the assumption for normally distributed residuals.", 
+            size = 10, x = 0.5, y = 0.4, hjust = 0.5)
+
+assumptions
+
+save_plot("assumptions.png", assumptions, base_height = 7, base_width = 8)
 
 AIC(multi_model1)
 ```
+
+
+```{r}
+# Graph multilevel model
+library(broom.helpers)
+tbl_regression(multi_model1)
+
+multi_results <- tidy(multi_model1,
+                         exponentiate = TRUE,
+                         conf.int = TRUE)
+```
+
+
+
 
 ```{r}
 gen1.lm <- lm(LCOE ~

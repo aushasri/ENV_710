@@ -25,10 +25,31 @@ view(Solar_ATB)
 
 ```
 
+```{r}
+Solar_ATB_Model1.2 <- Solar_ATB[-c(125,137,142),]
+Model1.2.lm <- lm(LCOE ~
+                Technology +
+                Class,
+             data = Solar_ATB_Model1.2)
+
+Solar_ATB_Model2.2 <- Solar_ATB[-c(137,142,147),]
+Model2.2.lm <- lm(LCOE ~
+                Technology +
+                Net_Capacity_Factor,
+             data = Solar_ATB_Model2.2)
+
+
+
+```
+
+
+
 
 ```{r}
 library(lme4)
 library(nlme)
+install.packages("MuMIn")
+library(MuMIn)
 
 
 Solar_ATB
@@ -37,6 +58,10 @@ multi_model1 <- lme(LCOE ~ Annual_Generation_MWh + Technology,
                    random = ~1 | Class, data = Solar_ATB)
 
 summary(multi_model1)
+
+
+
+AIC(Model3.2.lm, multi_model1)
 
 
 
@@ -83,6 +108,9 @@ assumptions
 save_plot("assumptions.png", assumptions, base_height = 7, base_width = 8)
 
 AIC(multi_model1)
+
+r.squaredGLMM(multi_model1)
+
 ```
 
 

@@ -5,6 +5,8 @@ date: "04-05-2025"
 output: html_document
 ---
 
+# Set Up
+
 ```{r message=FALSE, warning=FALSE}
 #Load packages
 library(tidyverse)
@@ -25,6 +27,8 @@ view(Solar_ATB)
 
 ```
 
+# Previous Linear Models
+
 ```{r}
 Solar_ATB_Model1.2 <- Solar_ATB[-c(125,137,142),]
 Model1.2.lm <- lm(LCOE ~
@@ -43,7 +47,7 @@ Model2.2.lm <- lm(LCOE ~
 ```
 
 
-
+# Multilevel Linear Model
 
 ```{r}
 library(lme4)
@@ -125,7 +129,18 @@ multi_results <- tidy(multi_model1,
 ```
 
 
+```{r}
+#Assess P value
 
+summary(multi.model1)$tTable
+
+```
+
+
+
+# Older Model Attempts
+
+## These were part of the initial model exploration - not used in our final report
 
 ```{r}
 gen1.lm <- lm(LCOE ~

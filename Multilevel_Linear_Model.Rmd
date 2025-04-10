@@ -65,10 +65,6 @@ summary(multi_model1)
 
 
 
-AIC(Model3.2.lm, multi_model1)
-
-
-
 residuals <- plot(multi_model1)
 
 normality <- qqnorm(multi_model1)
@@ -132,7 +128,7 @@ multi_results <- tidy(multi_model1,
 ```{r}
 #Assess P value
 
-summary(multi.model1)$tTable
+summary(multi_model1)$tTable
 
 ```
 
